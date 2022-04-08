@@ -12,16 +12,16 @@ class StudentSocketImpl extends BaseSocketImpl {
   private Demultiplexer D;
   private Timer tcpTimer;
 
+  // I DECLARED THESE
+  int ackNum;
+  int seqNum;
+
+
 
   StudentSocketImpl(Demultiplexer D) {  // default constructor
     this.D = D;
   }
 
-  public void sendAndWrapPacket(InetAddress destinationAddress, int destinationPort, int ackNum, int seqNum, boolean ackFlag, boolean synFlag, boolean finFlag, int windowSize, byte[] data)
-  {
-    TCPPacket packetToSend = TCPPacket(destinationAddress, destinationPort, ackNum, seqNum, ackFlag, synFlag, finFlag, windowSize, data);
-    
-  }
 
   /**
    * Connects this socket to the specified port number on the specified host.
@@ -33,6 +33,8 @@ class StudentSocketImpl extends BaseSocketImpl {
    */
   public synchronized void connect(InetAddress address, int port) throws IOException{
     localport = D.getNextAvailablePort();
+    ackNum = 0;
+    seqNum = 0;
 
   }
   
@@ -117,4 +119,11 @@ class StudentSocketImpl extends BaseSocketImpl {
     tcpTimer.cancel();
     tcpTimer = null;
   }
+
+  public void sendAndWrapPacket(InetAddress destinationAddress, int destinationPort, boolean ackFlag, boolean synFlag, boolean finFlag, int windowSize, byte[] data)
+  {
+    TCPPacket packetToSend = new TCPPacket(localport, destinationPort, ackNum, seqNum, ackFlag, synFlag, finFlag, windowSize, data);
+    TCPWrapper.send(packetToSend, destinationAddress);
+  }
+
 }
