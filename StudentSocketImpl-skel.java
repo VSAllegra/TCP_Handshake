@@ -20,7 +20,7 @@ class StudentSocketImpl extends BaseSocketImpl {
   byte[] data = null;
   
 
-  enum TCPState { CLOSED, SYN_SENT, SYN_RECEIVED, LISTENING, ESTABLISHED, CLOSE_WAIT, FIN_WAIT_1, FIN_WAIT_2, CLOSING, LAST_ACK, TIME_WAIT}
+  enum TCPState { CLOSED, SYN_SENT, SYN_RECEIVED, LISTEN, ESTABLISHED, CLOSE_WAIT, FIN_WAIT_1, FIN_WAIT_2, CLOSING, LAST_ACK, TIME_WAIT}
 
   StudentSocketImpl(Demultiplexer D) {  // default constructor
     this.D = D;
@@ -35,7 +35,7 @@ class StudentSocketImpl extends BaseSocketImpl {
    * @exception  IOException  if an I/O error occurs when attempting a
    *               connection.
    */
-  public synchronized void connect(InetAddress remoteAddress, int remotePort) throws IOException{
+  public synchronized void connect(InetAddress remoteAddress, int remotePort) throws IOException{    
     localport = D.getNextAvailablePort();
     ackNum = 0;
     seqNum = 0;
@@ -51,6 +51,58 @@ class StudentSocketImpl extends BaseSocketImpl {
    */
   public synchronized void receivePacket(TCPPacket p){
     System.out.println(p.toString());
+    
+    if(!p.ackFlag)
+    {
+      seqNum = p.ackNum;
+      ackNum = p.seqNum+1;
+    }
+    switch(curState)
+    {
+      case LISTEN:
+      if(p.synFlag)
+      {
+        sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, true, true, windowSize, data);
+        try
+        {
+          D.unregisterListeningSocket(localport, this);
+          D.registerConnection(p.sourceAddr, localport, p.sourcePort, this);
+        }
+        catch(Exception e)
+        {
+          e.printStackTrace();
+        }
+        change_state(curState, TCPState.SYN_RECEIVED);
+      }
+      break;
+
+      case SYN_SENT:
+      change_state(curState, TCPState.ESTABLISHED);
+
+      break;
+
+      case ESTABLISHED:
+      break;
+
+      case FIN_WAIT_1:
+      break;
+
+      case CLOSE_WAIT:
+      break;
+
+      case FIN_WAIT_2:
+      break;
+
+      case LAST_ACK:
+      break;
+
+      case CLOSING:
+      break;
+
+      case TIME_WAIT:
+      break;
+    }
+    this.notifyAll();
   }
   
   /** 
@@ -63,7 +115,7 @@ class StudentSocketImpl extends BaseSocketImpl {
   public synchronized void acceptConnection() throws IOException {
     curState = TCPState.CLOSED;
     D.registerListeningSocket(localport, this);
-    change_state(curState, TCPState.LISTENING);
+    change_state(curState, TCPState.LISTEN);
   }
 
   
