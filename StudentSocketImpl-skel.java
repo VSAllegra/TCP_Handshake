@@ -15,8 +15,12 @@ class StudentSocketImpl extends BaseSocketImpl {
   // I DECLARED THESE
   int ackNum;
   int seqNum;
+  TCPState curState;
+  int windowSize = 1;
+  byte[] data = null;
+  
 
-
+  enum TCPState { CLOSED, SYN_SENT, SYN_RECEIVED, LISTENING, ESTABLISHED, CLOSE_WAIT, FIN_WAIT_1, FIN_WAIT_2, CLOSING, LAST_ACK, TIME_WAIT}
 
   StudentSocketImpl(Demultiplexer D) {  // default constructor
     this.D = D;
@@ -31,10 +35,13 @@ class StudentSocketImpl extends BaseSocketImpl {
    * @exception  IOException  if an I/O error occurs when attempting a
    *               connection.
    */
-  public synchronized void connect(InetAddress address, int port) throws IOException{
+  public synchronized void connect(InetAddress remoteAddress, int remotePort) throws IOException{
     localport = D.getNextAvailablePort();
     ackNum = 0;
     seqNum = 0;
+    curState = CLOSED;
+    D.registerConnection(remoteAddress, localport, remotePort, this);
+    sendAndWrapPacket(remoteAddress, remotePort, false, true, false, windowSize, data);
 
   }
   
@@ -43,6 +50,7 @@ class StudentSocketImpl extends BaseSocketImpl {
    * @param p The packet that arrived
    */
   public synchronized void receivePacket(TCPPacket p){
+    system.out.println(p.toString());
   }
   
   /** 
@@ -120,10 +128,10 @@ class StudentSocketImpl extends BaseSocketImpl {
     tcpTimer = null;
   }
 
-  public void sendAndWrapPacket(InetAddress destinationAddress, int destinationPort, boolean ackFlag, boolean synFlag, boolean finFlag, int windowSize, byte[] data)
+  public void sendAndWrapPacket(InetAddress remoteAddress, int remotePort, boolean ackFlag, boolean synFlag, boolean finFlag, int windowSize, byte[] data)
   {
-    TCPPacket packetToSend = new TCPPacket(localport, destinationPort, ackNum, seqNum, ackFlag, synFlag, finFlag, windowSize, data);
-    TCPWrapper.send(packetToSend, destinationAddress);
+    TCPPacket packetToSend = new TCPPacket(localport, remotePort, ackNum, seqNum, ackFlag, synFlag, finFlag, windowSize, data);
+    TCPWrapper.send(packetToSend, remoteAddress);
   }
 
 }
