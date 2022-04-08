@@ -5,17 +5,27 @@ import java.util.Timer;
 class StudentSocketImpl extends BaseSocketImpl {
 
   // SocketImpl data members:
-  //   protected InetAddress address;
-  //   protected int port;
-  //   protected int localport;
+    // protected InetAddress address;
+    // protected int port;
+    // protected int localport;
 
   private Demultiplexer D;
   private Timer tcpTimer;
 
+  // I DECLARED THESE
+  int ackNum;
+  int seqNum;
+  TCPState curState;
+  int windowSize = 1;
+  byte[] data = null;
+  
+
+  enum TCPState { CLOSED, SYN_SENT, SYN_RECEIVED, LISTENING, ESTABLISHED, CLOSE_WAIT, FIN_WAIT_1, FIN_WAIT_2, CLOSING, LAST_ACK, TIME_WAIT}
 
   StudentSocketImpl(Demultiplexer D) {  // default constructor
     this.D = D;
   }
+
 
   /**
    * Connects this socket to the specified port number on the specified host.
@@ -25,8 +35,14 @@ class StudentSocketImpl extends BaseSocketImpl {
    * @exception  IOException  if an I/O error occurs when attempting a
    *               connection.
    */
-  public synchronized void connect(InetAddress address, int port) throws IOException{
+  public synchronized void connect(InetAddress remoteAddress, int remotePort) throws IOException{
     localport = D.getNextAvailablePort();
+    ackNum = 0;
+    seqNum = 0;
+    curState = TCPState.CLOSED;
+    D.registerConnection(remoteAddress, localport, remotePort, this);
+    sendAndWrapPacket(remoteAddress, remotePort, false, true, false, windowSize, data);
+    change_state(curState, TCPState.SYN_SENT);
   }
   
   /**
@@ -34,6 +50,7 @@ class StudentSocketImpl extends BaseSocketImpl {
    * @param p The packet that arrived
    */
   public synchronized void receivePacket(TCPPacket p){
+    System.out.println(p.toString());
   }
   
   /** 
@@ -44,6 +61,9 @@ class StudentSocketImpl extends BaseSocketImpl {
    * Note that localport is already set prior to this being called.
    */
   public synchronized void acceptConnection() throws IOException {
+    curState = TCPState.CLOSED;
+    D.registerListeningSocket(localport, this);
+    change_state(curState, TCPState.LISTENING);
   }
 
   
@@ -110,4 +130,16 @@ class StudentSocketImpl extends BaseSocketImpl {
     tcpTimer.cancel();
     tcpTimer = null;
   }
+
+  public void sendAndWrapPacket(InetAddress remoteAddress, int remotePort, boolean ackFlag, boolean synFlag, boolean finFlag, int windowSize, byte[] data)
+  {
+    TCPPacket packetToSend = new TCPPacket(localport, remotePort, ackNum, seqNum, ackFlag, synFlag, finFlag, windowSize, data);
+    TCPWrapper.send(packetToSend, remoteAddress);
+  }
+
+  public void change_state(TCPState curState, TCPState state_change_to){
+    this.curState = state_change_to;
+    System.out.print("\n ACTION-STATE-CHANGED: " + curState + " to " + state_change_to + "\n");
+}
+
 }
