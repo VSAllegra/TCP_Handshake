@@ -5,19 +5,19 @@ import java.util.Timer;
 class StudentSocketImpl extends BaseSocketImpl {
 
   // SocketImpl data members:
-    // protected InetAddress address;
+    // protected InetAddress address; 
     // protected int port;
     // protected int localport;
 
-  private Demultiplexer D;
-  private Timer tcpTimer;
+  private Demultiplexer D; //For managing Sockets, and Socket's function calls
+  private Timer tcpTimer; //For managing lost packets
 
   // I DECLARED THESE
-  int ackNum;
-  int seqNum;
-  TCPState curState;
-  int windowSize = 1;
-  byte[] data = null;
+  int ackNum; //Local AckNum, Added to Packets Before Sending
+  int seqNum; //Local Sequence Num, For Duplciate Management and Added Before Sending Pkts
+  TCPState curState; //Current State of the Socket in the TCP FSM
+  int windowSize = 1; //Window Size of Packet, Arbitrarily set to 1
+  byte[] data = null; //Data Sent in Packet, Arbitratily set to null
   
 
   enum TCPState { CLOSED, SYN_SENT, SYN_RECEIVED, LISTEN, ESTABLISHED, CLOSE_WAIT, FIN_WAIT_1, FIN_WAIT_2, CLOSING, LAST_ACK, TIME_WAIT}
@@ -36,11 +36,15 @@ class StudentSocketImpl extends BaseSocketImpl {
    *               connection.
    */
   public synchronized void connect(InetAddress remoteAddress, int remotePort) throws IOException{    
-    localport = D.getNextAvailablePort();
+    //EVENT ClientSide: Connect() 
+
+    localport = D.getNextAvailablePort(); 
     ackNum = 0;
     seqNum = 0;
     curState = TCPState.CLOSED;
     D.registerConnection(remoteAddress, localport, remotePort, this);
+
+    //RESPONSE ClientSide: Send Initial Syn Message & Switch to SYN_SENT STATE
     sendAndWrapPacket(remoteAddress, remotePort, false, true, false, windowSize, data);
     change_state(curState, TCPState.SYN_SENT);
   }
@@ -51,8 +55,7 @@ class StudentSocketImpl extends BaseSocketImpl {
    */
   public synchronized void receivePacket(TCPPacket p){
     System.out.println(p.toString());
-    
-    if(!p.ackFlag)
+    if(p.synFlag || p.finFlag) 
     {
       seqNum = p.ackNum;
       ackNum = p.seqNum+1;
@@ -60,9 +63,11 @@ class StudentSocketImpl extends BaseSocketImpl {
     switch(curState)
     {
       case LISTEN:
+      //EVENT Server Side: Receive SYN Pckt 
       if(p.synFlag)
       {
-        sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, true, true, windowSize, data);
+        //RESPONSE Server Side: Send SYN + ACK, Switch To SYN_RCV
+        sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, true, false, windowSize, data);
         try
         {
           D.unregisterListeningSocket(localport, this);
@@ -75,31 +80,62 @@ class StudentSocketImpl extends BaseSocketImpl {
         change_state(curState, TCPState.SYN_RECEIVED);
       }
       break;
-
+      
       case SYN_SENT:
+      //EVENT Client Side: Receive SYN + ACK
+
+      //RESPONSE Client Side: Send ACK, Change State to ESTABLISHED
       change_state(curState, TCPState.ESTABLISHED);
 
       break;
 
+      case SYN_RECEIVED:
+      //EVENT Server Side: Receive ACK
+
+      //RESPONSE Server Side: Change State to ESTABLISHED
+      break;
+
       case ESTABLISHED:
+      //EVENT Server Side: Receive FIN
+
+      //RESPONSE Server Side: Send ACK, switch State to CLOSE_WAIT
+
       break;
 
       case FIN_WAIT_1:
+      //EVENT A Client Side: Receive FIN 
+
+      //EVENT B Client Side: Reveive ACK
+
+      //RESPONSE A Client Side: Send ACK, switch State to CLOSING
+
+      //RESPONSE B Client Side: switch State to FIN_WAIT_2
+
       break;
 
-      case CLOSE_WAIT:
+      case CLOSE_WAIT: //IN CLOSING?
+
       break;
 
       case FIN_WAIT_2:
+      //EVENT Cient Side: Receive FIN
+
+      //RESPONSE Client Side: send ACK, switch State to TIME_WAIT
       break;
 
       case LAST_ACK:
+      //EVENT Server Side: Receive ACK
+
+      //RESPONSE Server Side: switch State to TIME_WAIT
       break;
 
       case CLOSING:
+      //EVENT Client Side: Receive ACK
+
+      //RESPONSE  Client Side: switch State to TIME_WAIT
       break;
 
-      case TIME_WAIT:
+      case TIME_WAIT: //Needed?
       break;
     }
     this.notifyAll();
@@ -114,8 +150,12 @@ class StudentSocketImpl extends BaseSocketImpl {
    */
   public synchronized void acceptConnection() throws IOException {
     curState = TCPState.CLOSED;
+
+    //TCP Diagram EVENT Server Side: Accept Conenction, Switch to LISTENING State
     D.registerListeningSocket(localport, this);
-    change_state(curState, TCPState.LISTEN);
+    change_state(curState, TCPState.LISTEN);  
+
+    //TCP Diagram RESPNOSE Server Side: None
   }
 
   
@@ -157,6 +197,16 @@ class StudentSocketImpl extends BaseSocketImpl {
    * @exception  IOException  if an I/O error occurs when closing this socket.
    */
   public synchronized void close() throws IOException {
+    switch(curState){
+      case ESTABLISHED:
+        //EVENT Client Side: close()
+        //RESPONSE Client Side: Send FIN, switch State to FIN_WAIT_1
+      case CLOSE_WAIT:
+        //EVENT Server Side: close()
+        //RESPONSE Server Side: send FIN, switch State to LAST_ACK
+      break;
+      
+    }
   }
 
   /** 
