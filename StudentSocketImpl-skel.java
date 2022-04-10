@@ -240,8 +240,8 @@ class StudentSocketImpl extends BaseSocketImpl {
   }
 
   public void change_state(TCPState state_change_to){
-    curState = state_change_to;
     System.out.print("\n ACTION-STATE-CHANGED: " + curState + " to " + state_change_to + "\n");
+    curState = state_change_to;
 }
 
 }
