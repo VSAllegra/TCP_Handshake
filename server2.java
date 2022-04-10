@@ -23,6 +23,7 @@ public class server2 {
     }
     catch(Exception e){
       System.err.println("Caught exception "+e);
+      e.printStackTrace();
     }
   }
 }
