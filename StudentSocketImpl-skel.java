@@ -68,7 +68,7 @@ class StudentSocketImpl extends BaseSocketImpl {
    * @param p The packet that arrived
    */
   public synchronized void receivePacket(TCPPacket p){
-    // System.out.println(p.toString());
+    System.out.println(p.toString());
     if(p.synFlag || p.finFlag) 
     {
       seqNum = p.ackNum;
@@ -142,7 +142,6 @@ class StudentSocketImpl extends BaseSocketImpl {
       }
       if(p.ackFlag)
       {
-        System.out.println("TEST");
         change_state(TCPState.FIN_WAIT_2);
       }
 
