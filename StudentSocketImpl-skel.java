@@ -24,6 +24,7 @@ class StudentSocketImpl extends BaseSocketImpl {
 
   StudentSocketImpl(Demultiplexer D) {  // default constructor
     this.D = D;
+    curState = TCPState.CLOSED;
   }
 
 
