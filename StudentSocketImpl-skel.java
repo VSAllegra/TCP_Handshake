@@ -137,13 +137,12 @@ class StudentSocketImpl extends BaseSocketImpl {
       //RESPONSE B Server Side: switch State to FIN_WAIT_2
       if(p.finFlag)
       {
-        System.out.println(p.sourceAddr);
-        System.out.println(p.sourcePort);
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
         change_state(TCPState.CLOSING);
       }
       if(p.ackFlag)
       {
+        
         change_state(TCPState.FIN_WAIT_2);
       }
 
@@ -252,9 +251,6 @@ class StudentSocketImpl extends BaseSocketImpl {
       case ESTABLISHED:
         //EVENT Server Side: close()
         //RESPONSE Server Side: Send FIN, switch State to FIN_WAIT_1
-        System.out.println(address);
-        System.out.println(this.address);
-        System.out.println(port);
         sendAndWrapPacket(address, port, false, false, true, windowSize, data);
         change_state(TCPState.FIN_WAIT_1);
         break;
