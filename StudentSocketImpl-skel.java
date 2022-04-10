@@ -193,7 +193,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     //TCP Diagram EVENT Server Side: Accept Conenction, Switch to LISTENING State
     D.registerListeningSocket(localport, this);
     change_state(TCPState.LISTEN);
-    while(curState != TCPState.SYN_RECEIVED || curState != TCPState.ESTABLISHED)
+    while(curState != TCPState.SYN_RECEIVED && curState != TCPState.ESTABLISHED)
     {
       try
       {
