@@ -69,9 +69,9 @@ class StudentSocketImpl extends BaseSocketImpl {
    * @param p The packet that arrived
    */
   public synchronized void receivePacket(TCPPacket p){
-    System.out.println("PACKET FLAGS:");
-    System.out.println(p.ackFlag + " " + p.synFlag + " " + p.finFlag);
-    System.out.println(p.toString());
+    // System.out.println("PACKET FLAGS:");
+    // System.out.println(p.ackFlag + " " + p.synFlag + " " + p.finFlag);
+    // System.out.println(p.toString());
     if(p.synFlag || p.finFlag) 
     {
       seqNum = p.ackNum;
@@ -301,7 +301,7 @@ class StudentSocketImpl extends BaseSocketImpl {
   }
 
   public void change_state(TCPState state_change_to){
-    System.out.println("ACTION-STATE-CHANGED: " + curState + " to " + state_change_to );
+    // System.out.println("ACTION-STATE-CHANGED: " + curState + " to " + state_change_to );
     curState = state_change_to;
 }
 
