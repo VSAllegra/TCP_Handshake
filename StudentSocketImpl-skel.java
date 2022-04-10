@@ -82,8 +82,8 @@ class StudentSocketImpl extends BaseSocketImpl {
       {
         //RESPONSE Server Side: Send SYN + ACK, Switch To SYN_RCV
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, true, false, windowSize, data);
-        address = p.remoteAddress;
-        port = p.remotePort;
+        address = p.sourceAddr;
+        port = p.sourcePort;
         try
         {
           D.unregisterListeningSocket(localport, this);
