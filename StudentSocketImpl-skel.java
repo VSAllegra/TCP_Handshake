@@ -151,9 +151,7 @@ class StudentSocketImpl extends BaseSocketImpl {
 
       break;
 
-      case CLOSE_WAIT: //IN CLOSING?
-
-      break;
+ 
 
       case FIN_WAIT_2:
       //EVENT Server Side: Receive FIN
@@ -181,8 +179,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       //RESPONSE  Sevrer Side: switch State to TIME_WAIT
       break;
 
-      case TIME_WAIT: //Needed?
-      break;
+      
     }
     this.notifyAll();
   }
@@ -267,7 +264,7 @@ class StudentSocketImpl extends BaseSocketImpl {
         change_state(TCPState.LAST_ACK);
       break;
     }
-    while(curState != TCPState.TIME_WAIT)
+    while(false)
     try{
       wait();
     }
