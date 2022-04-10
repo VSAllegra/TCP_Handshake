@@ -137,6 +137,8 @@ class StudentSocketImpl extends BaseSocketImpl {
       //RESPONSE B Server Side: switch State to FIN_WAIT_2
       if(p.finFlag)
       {
+        System.out.println(p.sourceAddr);
+        System.out.println(p.sourcePort);
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
         change_state(TCPState.CLOSING);
       }
