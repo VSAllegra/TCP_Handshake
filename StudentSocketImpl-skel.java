@@ -256,6 +256,7 @@ class StudentSocketImpl extends BaseSocketImpl {
         //EVENT Server Side: close()
         //RESPONSE Server Side: send FIN, switch State to LAST_ACK
         sendAndWrapPacket(address, port, false, false, true, windowSize, data);
+        change_state(TCPState.LAST_ACK);
       break;
       
     }
