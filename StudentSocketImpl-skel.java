@@ -25,7 +25,6 @@ class StudentSocketImpl extends BaseSocketImpl {
   StudentSocketImpl(Demultiplexer D) {  // default constructor
     this.D = D;
     curState = TCPState.CLOSED;
-    // test
   }
 
 
@@ -133,6 +132,8 @@ class StudentSocketImpl extends BaseSocketImpl {
       break;
 
       case FIN_WAIT_1:
+      System.out.println("PACKET FLAGS FOR FIN WAIT 1:");
+      System.out.println(p.ackFlag + " " + p.synFlag + " " + p.finFlag);
       //EVENT A Sever Side: Receive FIN 
       //EVENT B Server Side: Reveive ACK
       //RESPONSE A Server Side: Send ACK, switch State to CLOSING
@@ -166,8 +167,11 @@ class StudentSocketImpl extends BaseSocketImpl {
 
       case LAST_ACK:
       //EVENT Client Side: Receive ACK
-
       //RESPONSE Client Side: switch State to TIME_WAIT
+      if(p.ackFlag)
+      {
+        change_state(TCPState.TIME_WAIT);
+      }
       break;
 
       case CLOSING:
