@@ -69,6 +69,8 @@ class StudentSocketImpl extends BaseSocketImpl {
    * @param p The packet that arrived
    */
   public synchronized void receivePacket(TCPPacket p){
+    System.out.println("PACKET FLAGS:");
+    System.out.println(p.ackFlag + " " + p.synFlag + " " + p.finFlag);
     System.out.println(p.toString());
     if(p.synFlag || p.finFlag) 
     {
@@ -132,8 +134,6 @@ class StudentSocketImpl extends BaseSocketImpl {
       break;
 
       case FIN_WAIT_1:
-      System.out.println("PACKET FLAGS FOR FIN WAIT 1:");
-      System.out.println(p.ackFlag + " " + p.synFlag + " " + p.finFlag);
       //EVENT A Sever Side: Receive FIN 
       //EVENT B Server Side: Reveive ACK
       //RESPONSE A Server Side: Send ACK, switch State to CLOSING
