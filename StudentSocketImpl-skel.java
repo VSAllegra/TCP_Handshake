@@ -290,7 +290,7 @@ class StudentSocketImpl extends BaseSocketImpl {
 
   public void sendAndWrapPacket(InetAddress remoteAddress, int remotePort, boolean ackFlag, boolean synFlag, boolean finFlag, int windowSize, byte[] data)
   {
-    TCPPacket packetToSend = new TCPPacket(localport, remotePort, ackNum, seqNum, ackFlag, synFlag, finFlag, windowSize, data);
+    TCPPacket packetToSend = new TCPPacket(localport, remotePort, seqNum, ackNum, ackFlag, synFlag, finFlag, windowSize, data);
     TCPWrapper.send(packetToSend, remoteAddress);
   }
 
