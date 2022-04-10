@@ -266,7 +266,13 @@ class StudentSocketImpl extends BaseSocketImpl {
         sendAndWrapPacket(address, port, false, false, true, windowSize, data);
         change_state(TCPState.LAST_ACK);
       break;
-      
+    }
+    while(curState != TCPState.TIME_WAIT)
+    try{
+      wait();
+    }
+    catch(Exception e){
+      e.printStackTrace();
     }
   }
 
