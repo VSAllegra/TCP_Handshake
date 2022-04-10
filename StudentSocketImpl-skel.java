@@ -46,7 +46,7 @@ class StudentSocketImpl extends BaseSocketImpl {
 
     //RESPONSE ClientSide: Send Initial Syn Message & Switch to SYN_SENT STATE
     sendAndWrapPacket(remoteAddress, remotePort, false, true, false, windowSize, data);
-    change_state(curState, TCPState.SYN_SENT);
+    change_state(TCPState.SYN_SENT);
   }
   
   /**
@@ -77,7 +77,7 @@ class StudentSocketImpl extends BaseSocketImpl {
         {
           e.printStackTrace();
         }
-        change_state(curState, TCPState.SYN_RECEIVED);
+        change_state(TCPState.SYN_RECEIVED);
       }
       break;
       
@@ -85,7 +85,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       //EVENT Client Side: Receive SYN + ACK
 
       //RESPONSE Client Side: Send ACK, Change State to ESTABLISHED
-      change_state(curState, TCPState.ESTABLISHED);
+      change_state(TCPState.ESTABLISHED);
 
       break;
 
@@ -153,7 +153,7 @@ class StudentSocketImpl extends BaseSocketImpl {
 
     //TCP Diagram EVENT Server Side: Accept Conenction, Switch to LISTENING State
     D.registerListeningSocket(localport, this);
-    change_state(curState, TCPState.LISTEN);  
+    change_state(TCPState.LISTEN);  
 
     //TCP Diagram RESPNOSE Server Side: None
   }
@@ -239,8 +239,8 @@ class StudentSocketImpl extends BaseSocketImpl {
     TCPWrapper.send(packetToSend, remoteAddress);
   }
 
-  public void change_state(TCPState curState, TCPState state_change_to){
-    this.curState = state_change_to;
+  public void change_state(TCPState state_change_to){
+    curState = state_change_to;
     System.out.print("\n ACTION-STATE-CHANGED: " + curState + " to " + state_change_to + "\n");
 }
 
