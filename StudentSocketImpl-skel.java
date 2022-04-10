@@ -142,6 +142,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       }
       if(p.ackFlag)
       {
+        System.out.println("TEST");
         change_state(TCPState.FIN_WAIT_2);
       }
 
