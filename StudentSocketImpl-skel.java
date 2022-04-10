@@ -250,6 +250,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       case ESTABLISHED:
         //EVENT Server Side: close()
         //RESPONSE Server Side: Send FIN, switch State to FIN_WAIT_1
+        System.out.println(this.address, this.port);
         sendAndWrapPacket(address, port, false, false, true, windowSize, data);
         change_state(TCPState.FIN_WAIT_1);
         break;
