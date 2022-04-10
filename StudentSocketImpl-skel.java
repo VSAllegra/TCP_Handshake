@@ -47,7 +47,18 @@ class StudentSocketImpl extends BaseSocketImpl {
     //RESPONSE ClientSide: Send Initial Syn Message & Switch to SYN_SENT STATE
     sendAndWrapPacket(remoteAddress, remotePort, false, true, false, windowSize, data);
     change_state(TCPState.SYN_SENT);
+    while(curState != TCPState.ESTABLISHED)
+      {
+      try
+      {
+        wait();
+      }
+      catch(Exception e)
+      {
+        e.printStackTrace();
+      }
   }
+    }
   
   /**
    * Called by Demultiplexer when a packet comes in for this connection
@@ -153,8 +164,18 @@ class StudentSocketImpl extends BaseSocketImpl {
 
     //TCP Diagram EVENT Server Side: Accept Conenction, Switch to LISTENING State
     D.registerListeningSocket(localport, this);
-    change_state(TCPState.LISTEN);  
-
+    change_state(TCPState.LISTEN);
+    while(curState != TCPState.SYN_RECEIVED || curState != TCPState.ESTABLISHED)
+    {
+      try
+      {
+        wait();
+      }
+      catch(Exception e)
+      {
+        e.printStackTrace();
+      } 
+    }
     //TCP Diagram RESPNOSE Server Side: None
   }
 
