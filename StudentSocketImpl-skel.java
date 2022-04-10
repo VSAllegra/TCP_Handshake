@@ -120,8 +120,8 @@ class StudentSocketImpl extends BaseSocketImpl {
       break;
 
       case ESTABLISHED:
-      //EVENT Server Side: Receive FIN
-      //RESPONSE Server Side: Send ACK, switch State to CLOSE_WAIT
+      //EVENT Client Side: Receive FIN
+      //RESPONSE Client Side: Send ACK, switch State to CLOSE_WAIT
       if(p.finFlag)
       {
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
@@ -131,10 +131,10 @@ class StudentSocketImpl extends BaseSocketImpl {
       break;
 
       case FIN_WAIT_1:
-      //EVENT A Client Side: Receive FIN 
-      //EVENT B Client Side: Reveive ACK
-      //RESPONSE A Client Side: Send ACK, switch State to CLOSING
-      //RESPONSE B Client Side: switch State to FIN_WAIT_2
+      //EVENT A Sever Side: Receive FIN 
+      //EVENT B Server Side: Reveive ACK
+      //RESPONSE A Server Side: Send ACK, switch State to CLOSING
+      //RESPONSE B Server Side: switch State to FIN_WAIT_2
       if(p.finFlag)
       {
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
@@ -152,8 +152,8 @@ class StudentSocketImpl extends BaseSocketImpl {
       break;
 
       case FIN_WAIT_2:
-      //EVENT Cient Side: Receive FIN
-      //RESPONSE Client Side: send ACK, switch State to TIME_WAIT
+      //EVENT Server Side: Receive FIN
+      //RESPONSE Server Side: send ACK, switch State to TIME_WAIT
       if(p.finFlag)
       {
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
@@ -162,16 +162,16 @@ class StudentSocketImpl extends BaseSocketImpl {
       break;
 
       case LAST_ACK:
-      //EVENT Server Side: Receive ACK
+      //EVENT Client Side: Receive ACK
 
-      //RESPONSE Server Side: switch State to TIME_WAIT
+      //RESPONSE Client Side: switch State to TIME_WAIT
       break;
 
       case CLOSING:
-      //EVENT Client Side: Receive ACK
+      //EVENT Server Side: Receive ACK
 
 
-      //RESPONSE  Client Side: switch State to TIME_WAIT
+      //RESPONSE  Sevrer Side: switch State to TIME_WAIT
       break;
 
       case TIME_WAIT: //Needed?
@@ -248,14 +248,14 @@ class StudentSocketImpl extends BaseSocketImpl {
   public synchronized void close() throws IOException {
     switch(curState){
       case ESTABLISHED:
-        //EVENT Client Side: close()
-        //RESPONSE Client Side: Send FIN, switch State to FIN_WAIT_1
+        //EVENT Server Side: close()
+        //RESPONSE Server Side: Send FIN, switch State to FIN_WAIT_1
         sendAndWrapPacket(address, port, false, false, true, windowSize, data);
         change_state(TCPState.FIN_WAIT_1);
         break;
       case CLOSE_WAIT:
-        //EVENT Server Side: close()
-        //RESPONSE Server Side: send FIN, switch State to LAST_ACK
+        //EVENT Client Side: close()
+        //RESPONSE Client Side: send FIN, switch State to LAST_ACK
         sendAndWrapPacket(address, port, false, false, true, windowSize, data);
         change_state(TCPState.LAST_ACK);
       break;
