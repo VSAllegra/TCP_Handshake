@@ -65,7 +65,7 @@ class StudentSocketImpl extends BaseSocketImpl {
    * @param p The packet that arrived
    */
   public synchronized void receivePacket(TCPPacket p){
-    System.out.println(p.toString());
+    // System.out.println(p.toString());
     if(p.synFlag || p.finFlag) 
     {
       seqNum = p.ackNum;
@@ -96,7 +96,11 @@ class StudentSocketImpl extends BaseSocketImpl {
       //EVENT Client Side: Receive SYN + ACK
 
       //RESPONSE Client Side: Send ACK, Change State to ESTABLISHED
+      if(p.synFlag && p.ackFlag)
+      {
+      sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
       change_state(TCPState.ESTABLISHED);
+      }
 
       break;
 
