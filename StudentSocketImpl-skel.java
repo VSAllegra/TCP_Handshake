@@ -176,6 +176,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       //EVENT Server Side: Receive ACK
 
 
+
       //RESPONSE  Sevrer Side: switch State to TIME_WAIT
       break;
 
@@ -264,9 +265,8 @@ class StudentSocketImpl extends BaseSocketImpl {
         change_state(TCPState.LAST_ACK);
       break;
     }
-    while(curState != TCPState.CLOSED)
     try{
-      wait();
+      createTimerTask(5000, this);
     }
     catch(Exception e){
       e.printStackTrace();
