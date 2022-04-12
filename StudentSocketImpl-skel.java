@@ -72,6 +72,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     // System.out.println("PACKET FLAGS:");
     // System.out.println(p.ackFlag + " " + p.synFlag + " " + p.finFlag);
     // System.out.println(p.toString());
+    this.notifyAll();
     if(p.synFlag || p.finFlag) 
     {
       seqNum = p.ackNum;
@@ -107,7 +108,6 @@ class StudentSocketImpl extends BaseSocketImpl {
       if(p.synFlag && p.ackFlag)
       {
       tcpTimer.cancel();
-      tcpTimer = null;
       sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
       change_state(TCPState.ESTABLISHED);
       
@@ -120,7 +120,6 @@ class StudentSocketImpl extends BaseSocketImpl {
       if(p.ackFlag)
       {
         tcpTimer.cancel();
-        tcpTimer = null;
         change_state(TCPState.ESTABLISHED);
         
       }
@@ -134,7 +133,6 @@ class StudentSocketImpl extends BaseSocketImpl {
       if(p.ackFlag && p.synFlag)
       {
         tcpTimer.cancel();
-        tcpTimer = null;
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
         
       }
@@ -159,7 +157,6 @@ class StudentSocketImpl extends BaseSocketImpl {
       if(p.ackFlag)
       {
         tcpTimer.cancel();
-        tcpTimer = null;
         change_state(TCPState.FIN_WAIT_2);
         
       }
@@ -184,7 +181,6 @@ class StudentSocketImpl extends BaseSocketImpl {
       if(p.ackFlag)
       {
         tcpTimer.cancel();
-        tcpTimer = null;
         change_state(TCPState.TIME_WAIT);
         
       }
@@ -195,7 +191,6 @@ class StudentSocketImpl extends BaseSocketImpl {
       if(p.ackFlag)
       {
         tcpTimer.cancel();
-        tcpTimer = null;
         change_state(TCPState.TIME_WAIT);
         
       }
@@ -212,7 +207,7 @@ class StudentSocketImpl extends BaseSocketImpl {
 
       
     }
-    this.notifyAll();
+    // this.notifyAll();
   }
   
   /** 
