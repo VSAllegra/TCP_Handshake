@@ -279,8 +279,9 @@ class StudentSocketImpl extends BaseSocketImpl {
       case ESTABLISHED:
         //EVENT Server Side: close()
         //RESPONSE Server Side: Send FIN, switch State to FIN_WAIT_1
-        sendAndWrapPacket(address, port, false, false, true, windowSize, data);
         change_state(TCPState.FIN_WAIT_1);
+        sendAndWrapPacket(address, port, false, false, true, windowSize, data);
+        // change_state(TCPState.FIN_WAIT_1);
         break;
       case CLOSE_WAIT:
         //EVENT Client Side: close()
@@ -328,7 +329,7 @@ class StudentSocketImpl extends BaseSocketImpl {
   {
     TCPPacket packetToSend = new TCPPacket(localport, remotePort, seqNum, ackNum, ackFlag, synFlag, finFlag, windowSize, data);
     TCPWrapper.send(packetToSend, remoteAddress);
-    if(!ackFlag)
+    if(finFlag || synFlag)
     {
       createTimerTask(20000, packetToSend);
     }
