@@ -119,7 +119,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       //EVENT Server Side: Receive ACK
       if(p.ackFlag)
       {
-        // tcpTimer.cancel();
+        tcpTimer.cancel();
         change_state(TCPState.ESTABLISHED);
         
       }
@@ -132,7 +132,6 @@ class StudentSocketImpl extends BaseSocketImpl {
       //RESPONSE Client Side: Send ACK, switch State to CLOSE_WAIT
       if(p.ackFlag && p.synFlag)
       {
-        // tcpTimer.cancel();
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
         
       }
