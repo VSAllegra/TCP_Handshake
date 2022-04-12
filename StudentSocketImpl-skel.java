@@ -328,7 +328,7 @@ class StudentSocketImpl extends BaseSocketImpl {
   {
     TCPPacket packetToSend = new TCPPacket(localport, remotePort, seqNum, ackNum, ackFlag, synFlag, finFlag, windowSize, data);
     TCPWrapper.send(packetToSend, remoteAddress);
-    if(finFlag || synFlag)
+    if(!ackFlag)
     {
       createTimerTask(20000, packetToSend);
     }
