@@ -132,7 +132,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       //RESPONSE Client Side: Send ACK, switch State to CLOSE_WAIT
       if(p.ackFlag && p.synFlag)
       {
-        tcpTimer.cancel();
+        // tcpTimer.cancel();
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
         
       }
@@ -180,7 +180,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       //RESPONSE Client Side: switch State to TIME_WAIT
       if(p.ackFlag)
       {
-        tcpTimer.cancel();
+        // tcpTimer.cancel();
         change_state(TCPState.TIME_WAIT);
         
       }
@@ -190,7 +190,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       //EVENT Server Side: Receive ACK
       if(p.ackFlag)
       {
-        tcpTimer.cancel();
+        // tcpTimer.cancel();
         change_state(TCPState.TIME_WAIT);
         
       }
@@ -329,7 +329,7 @@ class StudentSocketImpl extends BaseSocketImpl {
   {
     TCPPacket packetToSend = new TCPPacket(localport, remotePort, seqNum, ackNum, ackFlag, synFlag, finFlag, windowSize, data);
     TCPWrapper.send(packetToSend, remoteAddress);
-    createTimerTask(5000, packetToSend);
+    // createTimerTask(5000, packetToSend);
   }
 
   public void resendPacket(TCPPacket p)
