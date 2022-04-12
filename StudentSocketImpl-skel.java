@@ -304,8 +304,9 @@ class StudentSocketImpl extends BaseSocketImpl {
    * @param ref generic reference to be returned to handleTimer
    */
   private TCPTimerTask createTimerTask(long delay, Object ref){
-    if(tcpTimer == null)
+    if(tcpTimer == null){
       tcpTimer = new Timer(false);
+    }
     return new TCPTimerTask(tcpTimer, delay, this, ref);
   }
 
