@@ -160,6 +160,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       {
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
         change_state(TCPState.TIME_WAIT);
+        
       }
       break;
 
@@ -174,7 +175,10 @@ class StudentSocketImpl extends BaseSocketImpl {
 
       case CLOSING:
       //EVENT Server Side: Receive ACK
-
+      if(p.ackFlag)
+      {
+        change_state(TCPState.TIME_WAIT);
+      }
 
 
       //RESPONSE  Sevrer Side: switch State to TIME_WAIT
