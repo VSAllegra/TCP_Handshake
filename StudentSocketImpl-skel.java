@@ -107,7 +107,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       //RESPONSE Client Side: Send ACK, Change State to ESTABLISHED
       if(p.synFlag && p.ackFlag)
       {
-        // tcpTimer.cancel();
+      cancel_reset_timer();
       sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
       change_state(TCPState.ESTABLISHED);
       }
@@ -118,7 +118,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       //EVENT Server Side: Receive ACK
       if(p.ackFlag)
       {
-        // tcpTimer.cancel();
+        cancel_reset_timer();
         change_state(TCPState.ESTABLISHED);
         
       }
@@ -131,7 +131,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       //RESPONSE Client Side: Send ACK, switch State to CLOSE_WAIT
       if(p.ackFlag && p.synFlag)
       {
-        // tcpTimer.cancel();
+        cancel_reset_timer();
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
         
       }
@@ -155,7 +155,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       }
       if(p.ackFlag)
       {
-        // tcpTimer.cancel();
+        cancel_reset_timer();
         change_state(TCPState.FIN_WAIT_2);
         
       }
@@ -179,7 +179,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       //RESPONSE Client Side: switch State to TIME_WAIT
       if(p.ackFlag)
       {
-        // tcpTimer.cancel();
+        cancel_reset_timer();
         change_state(TCPState.TIME_WAIT);
         
       }
@@ -189,7 +189,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       //EVENT Server Side: Receive ACK
       if(p.ackFlag)
       {
-        // tcpTimer.cancel();
+        cancel_reset_timer();
         change_state(TCPState.TIME_WAIT);
         
       }
@@ -328,10 +328,10 @@ class StudentSocketImpl extends BaseSocketImpl {
   {
     TCPPacket packetToSend = new TCPPacket(localport, remotePort, seqNum, ackNum, ackFlag, synFlag, finFlag, windowSize, data);
     TCPWrapper.send(packetToSend, remoteAddress);
-    // if(finFlag || synFlag)
-    // {
-    //   createTimerTask(20000, packetToSend);
-    // }
+    if(finFlag || synFlag)
+    {
+       createTimerTask(20000, packetToSend);
+    }
    
   }
 
@@ -344,6 +344,12 @@ class StudentSocketImpl extends BaseSocketImpl {
   public void change_state(TCPState state_change_to){
     System.out.println("ACTION-STATE-CHANGED: " + curState + " to " + state_change_to );
     curState = state_change_to;
-}
+  }
+
+  public void cancel_reset_timer(){
+    tcpTimer.cancel();
+    tcpTimer = null;
+  }
+
 
 }
