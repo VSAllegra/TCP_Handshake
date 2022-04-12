@@ -106,7 +106,8 @@ class StudentSocketImpl extends BaseSocketImpl {
       //RESPONSE Client Side: Send ACK, Change State to ESTABLISHED
       if(p.synFlag && p.ackFlag)
       {
-        tcpTimer.cancel();
+      tcpTimer.cancel();
+      tcpTimer = null;
       sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
       change_state(TCPState.ESTABLISHED);
       
@@ -119,6 +120,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       if(p.ackFlag)
       {
         tcpTimer.cancel();
+        tcpTimer = null;
         change_state(TCPState.ESTABLISHED);
         
       }
@@ -132,6 +134,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       if(p.ackFlag && p.synFlag)
       {
         tcpTimer.cancel();
+        tcpTimer = null;
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
         
       }
@@ -156,6 +159,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       if(p.ackFlag)
       {
         tcpTimer.cancel();
+        tcpTimer = null;
         change_state(TCPState.FIN_WAIT_2);
         
       }
@@ -180,6 +184,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       if(p.ackFlag)
       {
         tcpTimer.cancel();
+        tcpTimer = null;
         change_state(TCPState.TIME_WAIT);
         
       }
@@ -190,6 +195,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       if(p.ackFlag)
       {
         tcpTimer.cancel();
+        tcpTimer = null;
         change_state(TCPState.TIME_WAIT);
         
       }
