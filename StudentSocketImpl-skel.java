@@ -107,7 +107,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       //RESPONSE Client Side: Send ACK, Change State to ESTABLISHED
       if(p.synFlag && p.ackFlag)
       {
-      tcpTimer.cancel();
+      // tcpTimer.cancel();
       sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
       change_state(TCPState.ESTABLISHED);
       
