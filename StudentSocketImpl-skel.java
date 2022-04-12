@@ -106,8 +106,10 @@ class StudentSocketImpl extends BaseSocketImpl {
       //RESPONSE Client Side: Send ACK, Change State to ESTABLISHED
       if(p.synFlag && p.ackFlag)
       {
+        tcpTimer.cancel();
       sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
       change_state(TCPState.ESTABLISHED);
+      
       }
 
       break;
@@ -116,7 +118,9 @@ class StudentSocketImpl extends BaseSocketImpl {
       //EVENT Server Side: Receive ACK
       if(p.ackFlag)
       {
+        tcpTimer.cancel();
         change_state(TCPState.ESTABLISHED);
+        
       }
 
       //RESPONSE Server Side: Change State to ESTABLISHED
@@ -125,6 +129,12 @@ class StudentSocketImpl extends BaseSocketImpl {
       case ESTABLISHED:
       //EVENT Client Side: Receive FIN
       //RESPONSE Client Side: Send ACK, switch State to CLOSE_WAIT
+      if(p.ackFlag && p.synFlag)
+      {
+        tcpTimer.cancel();
+        sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
+        
+      }
       if(p.finFlag)
       {
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
@@ -145,9 +155,9 @@ class StudentSocketImpl extends BaseSocketImpl {
       }
       if(p.ackFlag)
       {
-        
-        change_state(TCPState.FIN_WAIT_2);
         tcpTimer.cancel();
+        change_state(TCPState.FIN_WAIT_2);
+        
       }
 
       break;
@@ -169,8 +179,9 @@ class StudentSocketImpl extends BaseSocketImpl {
       //RESPONSE Client Side: switch State to TIME_WAIT
       if(p.ackFlag)
       {
-        change_state(TCPState.TIME_WAIT);
         tcpTimer.cancel();
+        change_state(TCPState.TIME_WAIT);
+        
       }
       break;
 
@@ -178,8 +189,15 @@ class StudentSocketImpl extends BaseSocketImpl {
       //EVENT Server Side: Receive ACK
       if(p.ackFlag)
       {
-        change_state(TCPState.TIME_WAIT);
         tcpTimer.cancel();
+        change_state(TCPState.TIME_WAIT);
+        
+      }
+
+      case CLOSE_WAIT:
+      if(p.finFlag)
+      {
+        sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
       }
 
 
@@ -302,7 +320,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     // this must run only once the last timer (30 second timer) has expired
     tcpTimer.cancel();
     tcpTimer = null;
-    sendAndWrapPacket(remoteAddress, remotePort, ackFlag, synFlag, finFlag, windowSize, data);
+    resendPacket((TCPPacket)ref);
 
   }
 
@@ -315,7 +333,7 @@ class StudentSocketImpl extends BaseSocketImpl {
 
   public void resendPacket(TCPPacket p)
   {
-    TCPWrapper.send(p, p.remoteAddress);
+    TCPWrapper.send(p, p.sourceAddr);
     createTimerTask(5000, p);
   }
 
