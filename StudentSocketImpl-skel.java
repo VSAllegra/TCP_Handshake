@@ -155,7 +155,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       }
       if(p.ackFlag)
       {
-        tcpTimer.cancel();
+        // tcpTimer.cancel();
         change_state(TCPState.FIN_WAIT_2);
         
       }
@@ -179,7 +179,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       //RESPONSE Client Side: switch State to TIME_WAIT
       if(p.ackFlag)
       {
-        tcpTimer.cancel();
+        // tcpTimer.cancel();
         change_state(TCPState.TIME_WAIT);
         
       }
@@ -189,7 +189,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       //EVENT Server Side: Receive ACK
       if(p.ackFlag)
       {
-        tcpTimer.cancel();
+        // tcpTimer.cancel();
         change_state(TCPState.TIME_WAIT);
         
       }
