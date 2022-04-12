@@ -147,6 +147,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       {
         
         change_state(TCPState.FIN_WAIT_2);
+        tcpTimer.cancel();
       }
 
       break;
@@ -160,7 +161,6 @@ class StudentSocketImpl extends BaseSocketImpl {
       {
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
         change_state(TCPState.TIME_WAIT);
-        handleTimer(p);
       }
       break;
 
@@ -170,7 +170,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       if(p.ackFlag)
       {
         change_state(TCPState.TIME_WAIT);
-        handleTimer(p);
+        tcpTimer.cancel();
       }
       break;
 
@@ -179,7 +179,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       if(p.ackFlag)
       {
         change_state(TCPState.TIME_WAIT);
-        handleTimer(p);
+        tcpTimer.cancel();
       }
 
 
@@ -311,7 +311,6 @@ class StudentSocketImpl extends BaseSocketImpl {
     TCPPacket packetToSend = new TCPPacket(localport, remotePort, seqNum, ackNum, ackFlag, synFlag, finFlag, windowSize, data);
     TCPWrapper.send(packetToSend, remoteAddress);
     createTimerTask(5000, packetToSend);
-    
   }
 
   public void resendPacket(TCPPacket p)
