@@ -118,7 +118,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       //EVENT Server Side: Receive ACK
       if(p.ackFlag)
       {
-        tcpTimer.cancel();
+        // tcpTimer.cancel();
         change_state(TCPState.ESTABLISHED);
         
       }
@@ -328,10 +328,10 @@ class StudentSocketImpl extends BaseSocketImpl {
   {
     TCPPacket packetToSend = new TCPPacket(localport, remotePort, seqNum, ackNum, ackFlag, synFlag, finFlag, windowSize, data);
     TCPWrapper.send(packetToSend, remoteAddress);
-    if(finFlag || synFlag)
-    {
-      createTimerTask(20000, packetToSend);
-    }
+    // if(finFlag || synFlag)
+    // {
+    //   createTimerTask(20000, packetToSend);
+    // }
    
   }
 
