@@ -328,7 +328,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     TCPWrapper.send(packetToSend, remoteAddress);
     if(finFlag || synFlag)
     {
-      createTimerTask(5000, packetToSend);
+      createTimerTask(20000, packetToSend);
     }
    
   }
@@ -336,7 +336,7 @@ class StudentSocketImpl extends BaseSocketImpl {
   public void resendPacket(TCPPacket p)
   {
     TCPWrapper.send(p, p.sourceAddr);
-    createTimerTask(5000, p);
+    createTimerTask(20000, p);
   }
 
   public void change_state(TCPState state_change_to){
