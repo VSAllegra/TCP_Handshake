@@ -84,6 +84,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     switch(curState)
     {
       case LISTEN:
+      this.notifyAll();
       //EVENT Server Side: Receive SYN Pckt 
       if(p.synFlag)
       {
@@ -117,9 +118,11 @@ class StudentSocketImpl extends BaseSocketImpl {
       break;
 
       case SYN_RECEIVED:
+      this.notifyAll();
       //EVENT Server Side: Receive ACK
       if(p.ackFlag)
       {
+        this.notifyAll();
         cancel_reset_timer();
         change_state(TCPState.ESTABLISHED);
         
