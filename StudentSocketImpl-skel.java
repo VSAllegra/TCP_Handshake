@@ -295,7 +295,7 @@ class StudentSocketImpl extends BaseSocketImpl {
         change_state(TCPState.LAST_ACK);
       break;
     }
-    while(true)
+    while(curState != TCPState.TIME_WAIT)
     {
       try{
         wait();
