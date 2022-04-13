@@ -73,7 +73,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     // System.out.println(p.ackFlag + " " + p.synFlag + " " + p.finFlag);
     // System.out.println(p.toString());
     System.out.println("ABOUT TO NOTIFY");
-    this.notifyAll();
+    this.notify();
     if(p.synFlag || p.finFlag) 
     {
       seqNum = p.ackNum;
