@@ -54,6 +54,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       {
       try
       {
+        System.out.println("Waiting For Notify");
         wait();
       }
       catch(Exception e)
@@ -73,7 +74,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     // System.out.println(p.ackFlag + " " + p.synFlag + " " + p.finFlag);
     // System.out.println(p.toString());
     System.out.println("ABOUT TO NOTIFY");
-    this.notify();
+    this.notifyAll();
     if(p.synFlag || p.finFlag) 
     {
       seqNum = p.ackNum;
@@ -227,6 +228,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     {
       try
       {
+        System.out.println("Waiting For Notify");
         wait();
       }
       catch(Exception e)
