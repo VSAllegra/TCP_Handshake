@@ -321,7 +321,17 @@ class StudentSocketImpl extends BaseSocketImpl {
     // this must run only once the last timer (30 second timer) has expired
     tcpTimer.cancel();
     tcpTimer = null;
-    resendPacket((TCPPacket)ref);
+    if(curState == TCPState.TIME_WAIT){
+      change_state(TCPState.CLOSED);
+      try{
+        D.unregisterConnection(address, localport, port, this);
+      }catch(Exception e){
+        e.printStackTrace();
+      }
+    }
+    else{
+     resendPacket((TCPPacket)ref);
+    }
 
   }
 
