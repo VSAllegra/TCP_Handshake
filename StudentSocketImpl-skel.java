@@ -114,7 +114,6 @@ class StudentSocketImpl extends BaseSocketImpl {
       sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
       change_state(TCPState.ESTABLISHED);
       }
-
       break;
 
       case SYN_RECEIVED:
@@ -125,7 +124,6 @@ class StudentSocketImpl extends BaseSocketImpl {
         change_state(TCPState.ESTABLISHED);
         
       }
-
       //RESPONSE Server Side: Change State to ESTABLISHED
       break;
 
@@ -192,19 +190,18 @@ class StudentSocketImpl extends BaseSocketImpl {
       //EVENT Server Side: Receive ACK
       if(p.ackFlag)
       {
+        //RESPONSE  Sevrer Side: switch State to TIME_WAIT
         cancel_reset_timer();
         change_state(TCPState.TIME_WAIT);
         
       }
+      break;
 
       case CLOSE_WAIT:
       if(p.finFlag)
       {
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
       }
-
-
-      //RESPONSE  Sevrer Side: switch State to TIME_WAIT
       break;
 
       
