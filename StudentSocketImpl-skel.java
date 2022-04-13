@@ -206,7 +206,7 @@ class StudentSocketImpl extends BaseSocketImpl {
 
       
     }
-    // this.notifyAll();
+    this.notifyAll();
   }
   
   /** 
@@ -275,7 +275,7 @@ class StudentSocketImpl extends BaseSocketImpl {
    * @exception  IOException  if an I/O error occurs when closing this socket.
    */
   public synchronized void close() throws IOException {
-    System.out.println("CLOSING WAS CALLED!");
+    System.out.println("CLOSING WAS CALLED! State is: " +  curState);
     switch(curState){
       case ESTABLISHED:
         //EVENT Server Side: close()
