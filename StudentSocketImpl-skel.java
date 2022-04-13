@@ -295,8 +295,13 @@ class StudentSocketImpl extends BaseSocketImpl {
         change_state(TCPState.LAST_ACK);
       break;
     }
-    ClosingThread thread_for_closing = new ClosingThread(this, TCPState.CLOSE_WAIT);
-    thread_for_closing.run();
+
+    try{
+     ClosingThread thread_for_closing = new ClosingThread(this, TCPState.CLOSE_WAIT);
+     thread_for_closing.run();
+    }catch(Exception e){
+      e.printStackTrace();
+    }
     return;
   }
 
