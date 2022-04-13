@@ -295,16 +295,9 @@ class StudentSocketImpl extends BaseSocketImpl {
         change_state(TCPState.LAST_ACK);
       break;
     }
-    while(curState != TCPState.TIME_WAIT)
-    {
-      try{
-        wait();
-      }
-      catch(Exception e)
-      {
-        e.printStackTrace();
-      }
-    }
+    ClosingThread thread_for_closing = new ClosingThread(this, TCPState.CLOSE_WAIT);
+    thread_for_closing.run();
+    return;
   }
 
   /** 
@@ -369,6 +362,35 @@ class StudentSocketImpl extends BaseSocketImpl {
   public void cancel_reset_timer(){
     tcpTimer.cancel();
     tcpTimer = null;
+  }
+
+  public TCPState getCurrentState(){
+    return curState;
+  }
+
+  class ClosingThread implements Runnable{
+      StudentSocketImpl socket;
+      StudentSocketImpl.TCPState end_state;
+
+      ClosingThread(StudentSocketImpl my_socket, StudentSocketImpl.TCPState state){
+        socket = my_socket;
+        end_state = state;
+      }
+
+      public void run(){
+        while(socket.getCurrentState() != end_state)
+        {
+          try{
+            wait();
+          }
+          catch(Exception e)
+          {
+            e.printStackTrace();
+          }
+        }
+
+      }
+
   }
 
 
