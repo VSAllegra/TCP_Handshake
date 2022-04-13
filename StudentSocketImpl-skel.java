@@ -137,7 +137,6 @@ class StudentSocketImpl extends BaseSocketImpl {
       }
       if(p.finFlag)
       {
-        cancel_reset_timer();
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
         change_state(TCPState.CLOSE_WAIT);
       }
