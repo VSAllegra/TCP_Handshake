@@ -176,14 +176,8 @@ class StudentSocketImpl extends BaseSocketImpl {
       {
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
         change_state(TCPState.TIME_WAIT);
-        try{
-          System.out.println("WAITING");
-        Thread.sleep(30000);
-        }
-        catch(Exception e)
-        {
-          e.printStackTrace();
-        }
+        System.out.println("WAITING");
+        createTimerTask(30000, null);
   
       }
       break;
@@ -195,15 +189,8 @@ class StudentSocketImpl extends BaseSocketImpl {
       {
         cancel_reset_timer();
         change_state(TCPState.TIME_WAIT);
-        try{
-          System.out.println("WAITING");
-        Thread.sleep(30000);
-        }
-        catch(Exception e)
-        {
-          e.printStackTrace();
-        }
-  
+        System.out.println("WAITING");
+        createTimerTask(300000, null);
       }
       break;
 
