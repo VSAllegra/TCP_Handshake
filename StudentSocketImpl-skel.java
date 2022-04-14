@@ -342,7 +342,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       }
     }
     else{
-     System.out.println("HERE" + ref);
+     System.out.println("HERE");
      resendPacket((TCPPacket)ref);
     }
 
