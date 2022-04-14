@@ -367,6 +367,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     //Edge Case for when other side closes before this hits time_wait
     if(curState == TCPState.LAST_ACK && resend_counter > 2){
       change_state(TCPState.TIME_WAIT);
+      createTimerTask(30000, ref);
     }
 
     // this must run only once the last timer (30 second timer) has expired
