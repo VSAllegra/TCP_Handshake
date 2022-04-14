@@ -349,10 +349,6 @@ class StudentSocketImpl extends BaseSocketImpl {
       }
     }
     else{
-     System.out.println("HERE");
-     if(ref == null){
-      System.out.println("ref is null");
-     }
      System.out.println(ref.toString());
      resendPacket((TCPPacket)ref);
     }
@@ -372,7 +368,7 @@ class StudentSocketImpl extends BaseSocketImpl {
 
   public void resendPacket(TCPPacket p)
   {
-    TCPWrapper.send(p, p.sourceAddr);
+    TCPWrapper.send(p, address);
     createTimerTask(20000, p);
   }
 
