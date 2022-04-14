@@ -177,8 +177,7 @@ class StudentSocketImpl extends BaseSocketImpl {
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
         change_state(TCPState.TIME_WAIT);
         System.out.println("WAITING");
-        createTimerTask(30000, null);
-  
+        createTimerTask(30000, tcpTimer);
       }
       break;
 
