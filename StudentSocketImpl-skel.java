@@ -12,6 +12,7 @@ class StudentSocketImpl extends BaseSocketImpl {
 
   private Demultiplexer D; //For managing Sockets, and Socket's function calls
   private Timer tcpTimer; //For managing lost packets
+  private Timer TIME_WAIT_Timer;
 
   // I DECLARED THESE
   int ackNum; //Local AckNum, Added to Packets Before Sending
@@ -206,6 +207,10 @@ class StudentSocketImpl extends BaseSocketImpl {
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
       }
       break;
+
+      case TIME_WAIT:
+      handleTimer(p);
+
 
       
     }
