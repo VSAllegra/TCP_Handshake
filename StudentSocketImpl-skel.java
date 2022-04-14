@@ -54,9 +54,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       {
       try
       {
-        System.out.println("Waiting For Notify");
         wait();
-        System.out.println("Cur State Wait " + curState);
       }
       catch(Exception e)
       {
@@ -74,8 +72,12 @@ class StudentSocketImpl extends BaseSocketImpl {
     // System.out.println("PACKET FLAGS:");
     // System.out.println(p.ackFlag + " " + p.synFlag + " " + p.finFlag);
     // System.out.println(p.toString());
+<<<<<<< HEAD
     // System.out.println("ABOUT TO NOTIFY");
     // this.notifyAll();
+=======
+    this.notifyAll();
+>>>>>>> f523d05f10f84ea9e796d6660427568c9322222c
     if(p.synFlag || p.finFlag) 
     {
       seqNum = p.ackNum;
@@ -84,7 +86,10 @@ class StudentSocketImpl extends BaseSocketImpl {
     switch(curState)
     {
       case LISTEN:
+<<<<<<< HEAD
       
+=======
+>>>>>>> f523d05f10f84ea9e796d6660427568c9322222c
       //EVENT Server Side: Receive SYN Pckt 
       if(p.synFlag)
       {
@@ -118,7 +123,6 @@ class StudentSocketImpl extends BaseSocketImpl {
       break;
 
       case SYN_RECEIVED:
-      this.notifyAll();
       //EVENT Server Side: Receive ACK
       if(p.ackFlag)
       {
@@ -296,16 +300,14 @@ class StudentSocketImpl extends BaseSocketImpl {
         change_state(TCPState.LAST_ACK);
       break;
     }
-    while(curState != TCPState.TIME_WAIT)
-    {
-      try{
-        wait();
-      }
-      catch(Exception e)
-      {
-        e.printStackTrace();
-      }
+
+    try{
+     ClosingThread thread_for_closing = new ClosingThread(this, TCPState.CLOSE_WAIT);
+     thread_for_closing.run();
+    }catch(Exception e){
+      e.printStackTrace();
     }
+    return;
   }
 
   /** 
@@ -370,6 +372,35 @@ class StudentSocketImpl extends BaseSocketImpl {
   public void cancel_reset_timer(){
     tcpTimer.cancel();
     tcpTimer = null;
+  }
+
+  public TCPState getCurrentState(){
+    return curState;
+  }
+
+  class ClosingThread implements Runnable{
+      StudentSocketImpl socket;
+      StudentSocketImpl.TCPState end_state;
+
+      ClosingThread(StudentSocketImpl my_socket, StudentSocketImpl.TCPState state){
+        socket = my_socket;
+        end_state = state;
+      }
+
+      public void run(){
+        while(socket.getCurrentState() != end_state)
+        {
+          try{
+              socket.wait();
+          }
+          catch(Exception e)
+          {
+            e.printStackTrace();
+          }
+        }
+
+      }
+
   }
 
 
