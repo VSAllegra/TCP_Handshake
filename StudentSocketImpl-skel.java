@@ -405,6 +405,7 @@ class StudentSocketImpl extends BaseSocketImpl {
   public void resendPacket(TCPPacket p)
   {
     TCPWrapper.send(p, address);
+    System.out.println("PACKET IS BEING RESENT");
     createTimerTask(5000, p);
   }
 
