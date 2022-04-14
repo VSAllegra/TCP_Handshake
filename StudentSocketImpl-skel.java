@@ -228,9 +228,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     {
       try
       {
-        System.out.println("Waiting For Notify");
         wait();
-        System.out.println("Cur State Wait " + curState);
       }
       catch(Exception e)
       {
