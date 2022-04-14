@@ -116,7 +116,8 @@ class StudentSocketImpl extends BaseSocketImpl {
       //RESPONSE Client Side: Send ACK, Change State to ESTABLISHED
       if(p.synFlag && p.ackFlag)
       {
-      cancel_reset_timer();
+      if(tcpTimer != null) {cancel_reset_timer();}
+      // cancel_reset_timer();
       sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
       change_state(TCPState.ESTABLISHED);
       }
@@ -126,7 +127,8 @@ class StudentSocketImpl extends BaseSocketImpl {
       //EVENT Server Side: Receive ACK
       if(p.ackFlag)
       {
-        cancel_reset_timer();
+        if(tcpTimer != null) {cancel_reset_timer();}
+        // cancel_reset_timer();
         change_state(TCPState.ESTABLISHED);
         this.notifyAll();
         
@@ -139,7 +141,8 @@ class StudentSocketImpl extends BaseSocketImpl {
       //RESPONSE Client Side: Send ACK, switch State to CLOSE_WAIT
       if(p.ackFlag && p.synFlag)
       {
-        cancel_reset_timer();
+        if(tcpTimer != null) {cancel_reset_timer();}
+        // cancel_reset_timer();
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
       }
       if(p.finFlag)
@@ -163,7 +166,8 @@ class StudentSocketImpl extends BaseSocketImpl {
       }
       if(p.ackFlag)
       {
-        cancel_reset_timer();
+        if(tcpTimer != null) {cancel_reset_timer();}
+        // cancel_reset_timer();
         change_state(TCPState.FIN_WAIT_2);
         
       }
@@ -189,7 +193,8 @@ class StudentSocketImpl extends BaseSocketImpl {
       //RESPONSE Client Side: switch State to TIME_WAIT
       if(p.ackFlag)
       {
-        cancel_reset_timer();
+        if(tcpTimer != null) {cancel_reset_timer();}
+        // cancel_reset_timer();
         change_state(TCPState.TIME_WAIT);
 
         System.out.println("WAITING");
@@ -206,7 +211,8 @@ class StudentSocketImpl extends BaseSocketImpl {
       if(p.ackFlag)
       {
         //RESPONSE  Sevrer Side: switch State to TIME_WAIT
-        cancel_reset_timer();
+        if(tcpTimer != null) {cancel_reset_timer();}
+        // cancel_reset_timer();
         change_state(TCPState.TIME_WAIT);
         
       }
