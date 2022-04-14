@@ -207,6 +207,10 @@ class StudentSocketImpl extends BaseSocketImpl {
         change_state(TCPState.TIME_WAIT);
         
       }
+      else if(p.finFlag)
+      {
+        sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
+      }
       break;
 
       case CLOSE_WAIT:
