@@ -138,12 +138,12 @@ class StudentSocketImpl extends BaseSocketImpl {
       {
         cancel_reset_timer();
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
-        
       }
       if(p.finFlag)
       {
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
         change_state(TCPState.CLOSE_WAIT);
+        this.notifyAll();
       }
 
       break;
@@ -238,7 +238,6 @@ class StudentSocketImpl extends BaseSocketImpl {
 
       
     }
-    this.notifyAll();
   }
   
   /** 
