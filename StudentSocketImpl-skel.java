@@ -381,7 +381,9 @@ class StudentSocketImpl extends BaseSocketImpl {
         while(socket.getCurrentState() != end_state)
         {
           try{
-            wait();
+            synchronized(socket){
+              wait();
+            }
           }
           catch(Exception e)
           {
