@@ -124,8 +124,8 @@ class StudentSocketImpl extends BaseSocketImpl {
       if(p.ackFlag)
       {
         cancel_reset_timer();
-        this.notifyAll();
         change_state(TCPState.ESTABLISHED);
+        this.notifyAll();
         
       }
       //RESPONSE Server Side: Change State to ESTABLISHED
@@ -247,7 +247,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     //TCP Diagram EVENT Server Side: Accept Conenction, Switch to LISTENING State
     D.registerListeningSocket(localport, this);
     change_state(TCPState.LISTEN);
-    while(curState != TCPState.SYN_RECEIVED && curState != TCPState.ESTABLISHED)
+    while(curState != TCPState.ESTABLISHED)
     {
       try
       {
