@@ -176,7 +176,6 @@ class StudentSocketImpl extends BaseSocketImpl {
       {
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
         change_state(TCPState.TIME_WAIT);
-        handleTimer(p);
       }
       break;
 
@@ -335,6 +334,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     tcpTimer.cancel();
     tcpTimer = null;
     if(curState == TCPState.TIME_WAIT){
+      D.sleep(30000)
       change_state(TCPState.CLOSED);
       try{
         D.unregisterConnection(address, localport, port, this);
