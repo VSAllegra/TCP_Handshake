@@ -54,7 +54,9 @@ class StudentSocketImpl extends BaseSocketImpl {
       {
       try
       {
-        wait();
+        synchronized(this){
+          wait();
+        }
       }
       catch(Exception e)
       {
@@ -74,6 +76,10 @@ class StudentSocketImpl extends BaseSocketImpl {
     // System.out.println(p.toString());
     // System.out.println("ABOUT TO NOTIFY");
     // this.notifyAll();
+<<<<<<< HEAD
+=======
+    this.notifyAll();
+>>>>>>> 35bb04a00008ce4e7ea71c0bfc58e4520ad82f31
     if(p.synFlag || p.finFlag) 
     {
       seqNum = p.ackNum;
@@ -87,7 +93,6 @@ class StudentSocketImpl extends BaseSocketImpl {
       if(p.synFlag)
       {
         //RESPONSE Server Side: Send SYN + ACK, Switch To SYN_RCV
-        sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, true, false, windowSize, data);
         address = p.sourceAddr;
         port = p.sourcePort;
         try
@@ -99,6 +104,7 @@ class StudentSocketImpl extends BaseSocketImpl {
         {
           e.printStackTrace();
         }
+        sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, true, false, windowSize, data);
         change_state(TCPState.SYN_RECEIVED);
       }
       break;
@@ -119,8 +125,8 @@ class StudentSocketImpl extends BaseSocketImpl {
       //EVENT Server Side: Receive ACK
       if(p.ackFlag)
       {
-        this.notifyAll();
         cancel_reset_timer();
+        this.notifyAll();
         change_state(TCPState.ESTABLISHED);
         
       }
@@ -206,7 +212,6 @@ class StudentSocketImpl extends BaseSocketImpl {
 
       
     }
-    this.notifyAll();
     // this.notifyAll();
   }
   
@@ -227,9 +232,9 @@ class StudentSocketImpl extends BaseSocketImpl {
     {
       try
       {
-        System.out.println("Waiting For Notify");
-        wait();
-        System.out.println("Cur State Wait " + curState);
+        synchronized(this){
+          wait();
+        }
       }
       catch(Exception e)
       {
