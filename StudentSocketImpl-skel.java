@@ -208,8 +208,8 @@ class StudentSocketImpl extends BaseSocketImpl {
       }
       break;
 
-      // case TIME_WAIT:
-      // handleTimer(p);
+      case TIME_WAIT:
+      Thread.sleep(30000);
 
 
       
@@ -334,9 +334,8 @@ class StudentSocketImpl extends BaseSocketImpl {
     // this must run only once the last timer (30 second timer) has expired
     cancel_reset_timer();
     if(curState == TCPState.TIME_WAIT){
-      try{
-        D.sleep(30000);
       change_state(TCPState.CLOSED);
+      try{
         D.unregisterConnection(address, localport, port, this);
       }catch(Exception e){
         e.printStackTrace();
