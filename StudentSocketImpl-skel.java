@@ -192,6 +192,10 @@ class StudentSocketImpl extends BaseSocketImpl {
         System.out.println("WAITING");
         createTimerTask(30000, null);
       }
+      if(p.finFlag)
+      {
+        sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
+      }
       break;
 
       case CLOSING:
