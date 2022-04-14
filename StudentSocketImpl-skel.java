@@ -209,7 +209,13 @@ class StudentSocketImpl extends BaseSocketImpl {
       break;
 
       case TIME_WAIT:
+      try{
       Thread.sleep(30000);
+      }
+      catch(Exception e)
+      {
+        e.printStackTrace();
+      }
 
 
       
