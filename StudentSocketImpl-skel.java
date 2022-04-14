@@ -54,7 +54,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       {
       try
       {
-        wait();
+        this.wait();
       }
       catch(Exception e)
       {
@@ -227,7 +227,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     {
       try
       {
-        wait();
+        this.wait();
       }
       catch(Exception e)
       {
