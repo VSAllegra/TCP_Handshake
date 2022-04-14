@@ -350,6 +350,10 @@ class StudentSocketImpl extends BaseSocketImpl {
     }
     else{
      System.out.println("HERE");
+     if(ref == null){
+      System.out.println("ref is null");
+     }
+     System.out.println(ref.toString());
      resendPacket((TCPPacket)ref);
     }
 
