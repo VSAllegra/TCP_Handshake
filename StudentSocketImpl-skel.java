@@ -210,6 +210,7 @@ class StudentSocketImpl extends BaseSocketImpl {
 
       case TIME_WAIT:
       try{
+        System.out.println("WAITING");
       Thread.sleep(30000);
       }
       catch(Exception e)
