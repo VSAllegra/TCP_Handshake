@@ -329,10 +329,10 @@ class StudentSocketImpl extends BaseSocketImpl {
    * information.
    */
   public synchronized void handleTimer(Object ref){
+    System.out.println("TIMER EXPIRED");
 
     // this must run only once the last timer (30 second timer) has expired
-    tcpTimer.cancel();
-    tcpTimer = null;
+    cancel_reset_timer();
     if(curState == TCPState.TIME_WAIT){
       change_state(TCPState.CLOSED);
       try{
