@@ -74,8 +74,8 @@ class StudentSocketImpl extends BaseSocketImpl {
     // System.out.println("PACKET FLAGS:");
     // System.out.println(p.ackFlag + " " + p.synFlag + " " + p.finFlag);
     // System.out.println(p.toString());
-    System.out.println("ABOUT TO NOTIFY");
-    this.notifyAll();
+    // System.out.println("ABOUT TO NOTIFY");
+    // this.notifyAll();
     if(p.synFlag || p.finFlag) 
     {
       seqNum = p.ackNum;
@@ -84,7 +84,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     switch(curState)
     {
       case LISTEN:
-      this.notifyAll();
+      
       //EVENT Server Side: Receive SYN Pckt 
       if(p.synFlag)
       {
@@ -209,6 +209,7 @@ class StudentSocketImpl extends BaseSocketImpl {
 
       
     }
+    this.notifyAll();
     // this.notifyAll();
   }
   
