@@ -334,7 +334,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     tcpTimer.cancel();
     tcpTimer = null;
     if(curState == TCPState.TIME_WAIT){
-      D.sleep(30000)
+      D.sleep(30000);
       change_state(TCPState.CLOSED);
       try{
         D.unregisterConnection(address, localport, port, this);
