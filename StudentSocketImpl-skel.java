@@ -120,8 +120,8 @@ class StudentSocketImpl extends BaseSocketImpl {
       //EVENT Server Side: Receive ACK
       if(p.ackFlag)
       {
-        this.notifyAll();
         cancel_reset_timer();
+        this.notifyAll();
         change_state(TCPState.ESTABLISHED);
         
       }
