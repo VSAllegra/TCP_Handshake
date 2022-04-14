@@ -223,6 +223,12 @@ class StudentSocketImpl extends BaseSocketImpl {
       {
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
       }
+
+      case TIME_WAIT:
+      if(p.finFlag)
+      {
+        sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
+      }
       break;
 
       // case TIME_WAIT:
