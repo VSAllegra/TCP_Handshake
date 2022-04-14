@@ -139,8 +139,9 @@ class StudentSocketImpl extends BaseSocketImpl {
       //RESPONSE Client Side: Send ACK, switch State to CLOSE_WAIT
       if(p.ackFlag && p.synFlag)
       {
-        cancel_reset_timer();
+        
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
+        cancel_reset_timer();
       }
       if(p.finFlag)
       {
