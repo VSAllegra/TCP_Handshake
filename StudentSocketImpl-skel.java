@@ -176,6 +176,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       {
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
         change_state(TCPState.TIME_WAIT);
+        handleTimer(p);
       }
       break;
 
@@ -208,8 +209,8 @@ class StudentSocketImpl extends BaseSocketImpl {
       }
       break;
 
-      case TIME_WAIT:
-      handleTimer(p);
+      // case TIME_WAIT:
+      // handleTimer(p);
 
 
       
