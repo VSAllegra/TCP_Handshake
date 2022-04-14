@@ -177,7 +177,7 @@ class StudentSocketImpl extends BaseSocketImpl {
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
         change_state(TCPState.TIME_WAIT);
         System.out.println("WAITING");
-        createTimerTask(30000, tcpTimer);
+        createTimerTask(30000, null);
       }
       break;
 
@@ -354,9 +354,9 @@ class StudentSocketImpl extends BaseSocketImpl {
    */
   public synchronized void handleTimer(Object ref){
     System.out.println("TIMER EXPIRED");
+    cancel_reset_timer();
 
     // this must run only once the last timer (30 second timer) has expired
-    cancel_reset_timer();
     if(curState == TCPState.TIME_WAIT){
       change_state(TCPState.CLOSED);
       try{
