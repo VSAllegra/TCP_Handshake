@@ -209,7 +209,7 @@ class StudentSocketImpl extends BaseSocketImpl {
 
       
     }
-    // this.notifyAll();
+    this.notifyAll();
   }
   
   /** 
