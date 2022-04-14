@@ -1,6 +1,7 @@
 import java.net.*;
 import java.io.*;
 import java.util.Timer;
+//test
 
 class StudentSocketImpl extends BaseSocketImpl {
 
@@ -76,10 +77,6 @@ class StudentSocketImpl extends BaseSocketImpl {
     // System.out.println(p.toString());
     // System.out.println("ABOUT TO NOTIFY");
     // this.notifyAll();
-<<<<<<< HEAD
-=======
-    this.notifyAll();
->>>>>>> 35bb04a00008ce4e7ea71c0bfc58e4520ad82f31
     if(p.synFlag || p.finFlag) 
     {
       seqNum = p.ackNum;
