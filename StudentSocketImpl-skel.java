@@ -54,9 +54,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       {
       try
       {
-        System.out.println("Waiting For Notify");
         wait();
-        System.out.println("Cur State Wait " + curState);
       }
       catch(Exception e)
       {
@@ -74,7 +72,6 @@ class StudentSocketImpl extends BaseSocketImpl {
     // System.out.println("PACKET FLAGS:");
     // System.out.println(p.ackFlag + " " + p.synFlag + " " + p.finFlag);
     // System.out.println(p.toString());
-    System.out.println("ABOUT TO NOTIFY");
     this.notifyAll();
     if(p.synFlag || p.finFlag) 
     {
@@ -84,7 +81,6 @@ class StudentSocketImpl extends BaseSocketImpl {
     switch(curState)
     {
       case LISTEN:
-      this.notifyAll();
       //EVENT Server Side: Receive SYN Pckt 
       if(p.synFlag)
       {
@@ -118,7 +114,6 @@ class StudentSocketImpl extends BaseSocketImpl {
       break;
 
       case SYN_RECEIVED:
-      this.notifyAll();
       //EVENT Server Side: Receive ACK
       if(p.ackFlag)
       {
