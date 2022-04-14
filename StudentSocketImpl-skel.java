@@ -383,7 +383,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       }
 
       public void run(){
-        while(socket.getCurrentState() != TCPState.TIME_WAIT)
+        while(socket.getCurrentState() != TCPState.CLOSED)
         {
           try{
               socket.wait();
