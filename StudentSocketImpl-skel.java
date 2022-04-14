@@ -76,7 +76,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     // System.out.println("PACKET FLAGS:");
     // System.out.println(p.ackFlag + " " + p.synFlag + " " + p.finFlag);
     // System.out.println(p.toString());
-    // System.out.println("ABOUT TO NOTIFY");
+    //System.out.println("ABOUT TO NOTIFY");
     this.notifyAll();
     if(p.synFlag || p.finFlag) 
     {
