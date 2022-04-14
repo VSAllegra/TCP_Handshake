@@ -1,4 +1,5 @@
 import java.net.*;
+import java.beans.Customizer;
 import java.io.*;
 import java.util.Timer;
 //test
@@ -20,6 +21,8 @@ class StudentSocketImpl extends BaseSocketImpl {
   TCPState curState; //Current State of the Socket in the TCP FSM
   int windowSize = 1; //Window Size of Packet, Arbitrarily set to 1
   byte[] data = null; //Data Sent in Packet, Arbitratily set to null
+
+  int resend_counter;
   
 
   enum TCPState { CLOSED, SYN_SENT, SYN_RECEIVED, LISTEN, ESTABLISHED, CLOSE_WAIT, FIN_WAIT_1, FIN_WAIT_2, CLOSING, LAST_ACK, TIME_WAIT}
@@ -188,6 +191,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       {
         cancel_reset_timer();
         change_state(TCPState.TIME_WAIT);
+
         System.out.println("WAITING");
         createTimerTask(30000, null);
       }
@@ -320,6 +324,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       case CLOSE_WAIT:
         //EVENT Client Side: close()
         //RESPONSE Client Side: send FIN, switch State to LAST_ACK
+        resend_counter = 0;
         sendAndWrapPacket(address, port, false, false, true, windowSize, data);
         change_state(TCPState.LAST_ACK);
       break;
@@ -356,9 +361,17 @@ class StudentSocketImpl extends BaseSocketImpl {
     System.out.println("TIMER EXPIRED");
     cancel_reset_timer();
 
+    resend_counter++;
+
+    //Edge Case for when other side closes before this hits time_wait
+    if(curState == TCPState.LAST_ACK && resend_counter > 2){
+      change_state(TCPState.TIME_WAIT);
+    }
+
     // this must run only once the last timer (30 second timer) has expired
     if(curState == TCPState.TIME_WAIT){
       change_state(TCPState.CLOSED);
+
       try{
         D.unregisterConnection(address, localport, port, this);
       }catch(Exception e){
