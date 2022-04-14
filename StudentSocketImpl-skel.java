@@ -405,7 +405,7 @@ class StudentSocketImpl extends BaseSocketImpl {
   public void resendPacket(TCPPacket p)
   {
     TCPWrapper.send(p, address);
-    createTimerTask(20000, p);
+    createTimerTask(5000, p);
   }
 
   public void change_state(TCPState state_change_to){
