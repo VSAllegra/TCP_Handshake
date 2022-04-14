@@ -85,7 +85,6 @@ class StudentSocketImpl extends BaseSocketImpl {
       if(p.synFlag)
       {
         //RESPONSE Server Side: Send SYN + ACK, Switch To SYN_RCV
-        sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, true, false, windowSize, data);
         address = p.sourceAddr;
         port = p.sourcePort;
         try
@@ -97,6 +96,7 @@ class StudentSocketImpl extends BaseSocketImpl {
         {
           e.printStackTrace();
         }
+        sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, true, false, windowSize, data);
         change_state(TCPState.SYN_RECEIVED);
       }
       break;
