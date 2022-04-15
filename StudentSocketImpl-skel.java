@@ -198,8 +198,8 @@ class StudentSocketImpl extends BaseSocketImpl {
       if(p.finFlag)
       {
         //RESPONSE Server Side: send ACK, switch State to TIME_WAIT
-        change_state(TCPState.TIME_WAIT);
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
+        change_state(TCPState.TIME_WAIT);
 
         System.out.println("WAITING");
 
