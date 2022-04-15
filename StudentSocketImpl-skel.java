@@ -57,7 +57,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     //RESPONSE Client Side: Send Initial Syn Message & Switch to SYN_SENT STATE
     sendAndWrapPacket(remoteAddress, remotePort, false, true, false, windowSize, data);
     change_state(TCPState.SYN_SENT);
-    while(curState != TCPState.CLOSE_WAIT)
+    while(curState != TCPState.CLOSE_WAIT && curState != TCPState.ESTABLISHED)
       {
       try
       {
