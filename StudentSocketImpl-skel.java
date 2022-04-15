@@ -171,9 +171,6 @@ class StudentSocketImpl extends BaseSocketImpl {
         //RESPONSE Server Side: Send ACK, switch State to CLOSING
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
         change_state(TCPState.CLOSING);
-
-        //For Same Edge Case but on Server Side
-        createTimerTask(30000, null);
       }
 
       //EVENT B Server Side: Reveive ACK
@@ -191,10 +188,6 @@ class StudentSocketImpl extends BaseSocketImpl {
 
         // cancel_reset_timer();
         change_state(TCPState.FIN_WAIT_2);
-
-        //For Same Edge Case but on Server Side
-        createTimerTask(30000, null);
-        
       }
       break;
 
@@ -395,19 +388,20 @@ class StudentSocketImpl extends BaseSocketImpl {
     System.out.println("TIMER EXPIRED");
     cancel_reset_timer();
 
-
     resend_counter++;
 
     /**Edge Case for when server side closes before client hits time_wait
-     * Assume that if no response is received after 6 attempts 
+     * Assume that if no response is received after 8 attempts 
      * the other side has already closed
      * */
-    if(curState == TCPState.LAST_ACK && resend_counter > 5){ //Set Arbitrarily to 3 ACKS
+    if(curState == TCPState.LAST_ACK && resend_counter > 7){ //Set Arbitrarily to 3 ACKS
       change_state(TCPState.TIME_WAIT);
+      System.out.println("WAITING");
+      createTimerTask(30000, null);
     }
 
     // this must run only once the last time(r (30 second timer) has expired
-    if(curState == TCPState.TIME_WAIT || ((curState == TCPState.FIN_WAIT_2 || curState == TCPState.CLOSING) && resend_counter > 6)){
+    if(curState == TCPState.TIME_WAIT){
       change_state(TCPState.CLOSED);
       try{
         D.unregisterConnection(address, localport, port, this);
@@ -432,7 +426,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     Resending Acks is handled in Receive Pack */
     if(finFlag || synFlag)
     {
-       createTimerTask(20000, packetToSend);
+      createTimerTask(20000, packetToSend);
     }
    
   }
