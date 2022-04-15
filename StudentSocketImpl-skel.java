@@ -213,7 +213,7 @@ class StudentSocketImpl extends BaseSocketImpl {
         change_state(TCPState.TIME_WAIT);
 
         System.out.println("WAITING");
-        createTimerTask(30000, null);
+        createTimerTask(15000, null);
       }
 
       //EVENT Client Side: Receive Duplicate FIN (ACK (CW) is lost, and close() happens)
@@ -397,12 +397,12 @@ class StudentSocketImpl extends BaseSocketImpl {
     // this must run only once the last timer (30 second timer) has expired
     if(curState == TCPState.TIME_WAIT || (curState == TCPState.FIN_WAIT_2 && resend_counter > 2)){
       change_state(TCPState.CLOSED);
-
       try{
         D.unregisterConnection(address, localport, port, this);
       }catch(Exception e){
         e.printStackTrace();
       }
+      notifyAll();
     }
     else{
      //System.out.println(ref.toString());
@@ -454,7 +454,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       }
 
       public void run(){
-        while(socket.getCurrentState() != TCPState.TIME_WAIT)
+        while(socket.getCurrentState() != TCPState.CLOSED)
         {
           try{
               socket.wait();
