@@ -194,6 +194,7 @@ class StudentSocketImpl extends BaseSocketImpl {
         change_state(TCPState.TIME_WAIT);
 
         System.out.println("WAITING");
+        createTimerTask(40000, null);
 
       }
       break;
