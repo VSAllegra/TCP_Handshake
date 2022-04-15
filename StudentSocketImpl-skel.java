@@ -177,11 +177,19 @@ class StudentSocketImpl extends BaseSocketImpl {
       {
         //RESPONSE B Server Side: switch State to FIN_WAIT_2
         if(tcpTimer != null) {cancel_reset_timer();}
+
+        if(p.synFlag)
+        {
+          sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
+        }
+        else
+        {
         // cancel_reset_timer();
         change_state(TCPState.FIN_WAIT_2);
 
         //For Same Edge Case but on Server Side
         createTimerTask(30000, null);
+        }
         
       }
       break;
