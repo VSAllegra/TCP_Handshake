@@ -2,7 +2,6 @@ import java.net.*;
 import java.beans.Customizer;
 import java.io.*;
 import java.util.Timer;
-//test
 
 class StudentSocketImpl extends BaseSocketImpl {
 
@@ -29,7 +28,8 @@ class StudentSocketImpl extends BaseSocketImpl {
 
   StudentSocketImpl(Demultiplexer D) {  // default constructor
     this.D = D;
-    curState = TCPState.CLOSED;
+    //Initial the other server socket to prevent null error while closing
+    curState = TCPState.CLOSED; 
   }
 
 
@@ -49,10 +49,12 @@ class StudentSocketImpl extends BaseSocketImpl {
     port = remotePort;
     ackNum = 0;
     seqNum = 0;
+
+
     curState = TCPState.CLOSED;
     D.registerConnection(remoteAddress, localport, remotePort, this);
 
-    //RESPONSE ClientSide: Send Initial Syn Message & Switch to SYN_SENT STATE
+    //RESPONSE Client Side: Send Initial Syn Message & Switch to SYN_SENT STATE
     sendAndWrapPacket(remoteAddress, remotePort, false, true, false, windowSize, data);
     change_state(TCPState.SYN_SENT);
     while(curState != TCPState.CLOSE_WAIT)
@@ -86,6 +88,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       seqNum = p.ackNum;
       ackNum = p.seqNum+1;
     }
+
     switch(curState)
     {
       case LISTEN:
@@ -93,7 +96,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       //EVENT Server Side: Receive SYN Pckt 
       if(p.synFlag)
       {
-        //RESPONSE Server Side: Send SYN + ACK, Switch To SYN_RCV
+        //RESPONSE Server Side: Send SYN + ACK, Switch To SYN_RCV, Register Connection
         address = p.sourceAddr;
         port = p.sourcePort;
         try
@@ -113,11 +116,12 @@ class StudentSocketImpl extends BaseSocketImpl {
       case SYN_SENT:
       //EVENT Client Side: Receive SYN + ACK
 
-      //RESPONSE Client Side: Send ACK, Change State to ESTABLISHED
       if(p.synFlag && p.ackFlag)
       {
+      //RESPONSE Client Side: Send ACK, Change State to ESTABLISHED
       if(tcpTimer != null) {cancel_reset_timer();}
       // cancel_reset_timer();
+
       sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
       change_state(TCPState.ESTABLISHED);
       }
@@ -127,62 +131,66 @@ class StudentSocketImpl extends BaseSocketImpl {
       //EVENT Server Side: Receive ACK
       if(p.ackFlag)
       {
+        //RESPONSE Server Side: Change State to ESTABLISHED
         if(tcpTimer != null) {cancel_reset_timer();}
         // cancel_reset_timer();
+
         change_state(TCPState.ESTABLISHED);
         this.notifyAll();
-        
       }
-      //RESPONSE Server Side: Change State to ESTABLISHED
       break;
 
       case ESTABLISHED:
       //EVENT Client Side: Receive FIN
-      //RESPONSE Client Side: Send ACK, switch State to CLOSE_WAIT
-      if(p.ackFlag && p.synFlag)
-      {
-        if(tcpTimer != null) {cancel_reset_timer();}
-        // cancel_reset_timer();
-        sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
-      }
       if(p.finFlag)
       {
+        //RESPONSE Client Side: Send ACK, switch State to CLOSE_WAIT
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
         change_state(TCPState.CLOSE_WAIT);
         this.notifyAll();
       }
 
+      //EVENT Client Side: Receive Dup SYNACK (ACK (SynSen) was Lost)
+      if(p.ackFlag && p.synFlag)
+      {
+        //RESPONSE Clinet Side: Resend ACK
+        if(tcpTimer != null) {cancel_reset_timer();}
+        // cancel_reset_timer();
+
+        sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
+      }      
       break;
 
+      
+
       case FIN_WAIT_1:
-      //EVENT A Sever Side: Receive FIN 
-      //EVENT B Server Side: Reveive ACK
-      //RESPONSE A Server Side: Send ACK, switch State to CLOSING
-      //RESPONSE B Server Side: switch State to FIN_WAIT_2
+      //EVENT Sever Side: Receive FIN 
       if(p.finFlag)
       {
+        //RESPONSE Server Side: Send ACK, switch State to CLOSING
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
         change_state(TCPState.CLOSING);
       }
+
+      //EVENT B Server Side: Reveive ACK
       if(p.ackFlag)
       {
+        //RESPONSE B Server Side: switch State to FIN_WAIT_2
         if(tcpTimer != null) {cancel_reset_timer();}
         // cancel_reset_timer();
         change_state(TCPState.FIN_WAIT_2);
         
       }
-
       break;
-
- 
 
       case FIN_WAIT_2:
       //EVENT Server Side: Receive FIN
-      //RESPONSE Server Side: send ACK, switch State to TIME_WAIT
       if(p.finFlag)
       {
-        sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
+        //RESPONSE Server Side: send ACK, switch State to TIME_WAIT
         change_state(TCPState.TIME_WAIT);
+        sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
+
         System.out.println("WAITING");
         createTimerTask(30000, null);
       }
@@ -190,18 +198,22 @@ class StudentSocketImpl extends BaseSocketImpl {
 
       case LAST_ACK:
       //EVENT Client Side: Receive ACK
-      //RESPONSE Client Side: switch State to TIME_WAIT
       if(p.ackFlag)
       {
+        //RESPONSE Client Side: switch State to TIME_WAIT Start End Closing Timer
         if(tcpTimer != null) {cancel_reset_timer();}
         // cancel_reset_timer();
+
         change_state(TCPState.TIME_WAIT);
 
         System.out.println("WAITING");
         createTimerTask(30000, null);
       }
+
+      //EVENT Client Side: Receive Duplicate FIN (ACK (CW) is lost, and close() happens)
       if(p.finFlag)
       {
+        //Response Client Side: Resend ACK
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
       }
       break;
@@ -216,13 +228,17 @@ class StudentSocketImpl extends BaseSocketImpl {
         change_state(TCPState.TIME_WAIT);
         
       }
+
+      //EVENT Server Side: Receive Duplicate Fin (Ack Sent (FW1) was Lost)
       else if(p.finFlag)
       {
+        //RESPONSE Server Side: Resend Ack 
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
       }
       break;
 
       case CLOSE_WAIT:
+      //Event Client Side: Receive Duplicate FIN, (Ack Sent (Established) was Lost)
       if(p.finFlag)
       {
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
@@ -230,24 +246,13 @@ class StudentSocketImpl extends BaseSocketImpl {
       break;
 
       case TIME_WAIT:
+      //EVENT  Server Side: Receive Duplicate Fin (Ack Sent (FW2) was lost)
       if(p.finFlag)
       {
+        //RESPONSE Server Side: Resend Ack
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
       }
-      break;
-
-      // case TIME_WAIT:
-      // try{
-      //   System.out.println("WAITING");
-      // Thread.sleep(30000);
-      // }
-      // catch(Exception e)
-      // {
-      //   e.printStackTrace();
-      // }
-
-
-      
+      break;    
     }
   }
   
@@ -321,23 +326,28 @@ class StudentSocketImpl extends BaseSocketImpl {
   public synchronized void close() throws IOException {
     System.out.println("CLOSING WAS CALLED! State is: " +  curState);
     switch(curState){
+      //EVENT Server Side: close()
       case ESTABLISHED:
-        //EVENT Server Side: close()
         //RESPONSE Server Side: Send FIN, switch State to FIN_WAIT_1
         sendAndWrapPacket(address, port, false, false, true, windowSize, data);
         change_state(TCPState.FIN_WAIT_1);
         break;
+
+      //EVENT Client Side: close()
       case CLOSE_WAIT:
-        //EVENT Client Side: close()
         //RESPONSE Client Side: send FIN, switch State to LAST_ACK
-        resend_counter = 0;
+
+        //For Edge Case: Sever Side Goes to Closed, before Clinet is in Time_Wait
+        resend_counter = 0; 
+
         sendAndWrapPacket(address, port, false, false, true, windowSize, data);
         change_state(TCPState.LAST_ACK);
       break;
     }
 
+    //Keep Process Alive in Background Thread
     try{
-     ClosingThread thread_for_closing = new ClosingThread(this, TCPState.CLOSE_WAIT);
+     ClosingThread thread_for_closing = new ClosingThread(this);
      thread_for_closing.run();
     }catch(Exception e){
       e.printStackTrace();
@@ -367,10 +377,14 @@ class StudentSocketImpl extends BaseSocketImpl {
     System.out.println("TIMER EXPIRED");
     cancel_reset_timer();
 
+
     resend_counter++;
 
-    //Edge Case for when other side closes before this hits time_wait
-    if(curState == TCPState.LAST_ACK && resend_counter > 2){
+    /**Edge Case for when server side closes before client hits time_wait
+     * Assume that if no response is received after 3 attempts 
+     * the other side has already closed
+     * */
+    if(curState == TCPState.LAST_ACK && resend_counter > 2){ //Set Arbitrarily to 3 ACKS
       change_state(TCPState.TIME_WAIT);
     }
 
@@ -385,7 +399,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       }
     }
     else{
-     System.out.println(ref.toString());
+     //System.out.println(ref.toString());
      resendPacket((TCPPacket)ref);
     }
 
@@ -395,6 +409,9 @@ class StudentSocketImpl extends BaseSocketImpl {
   {
     TCPPacket packetToSend = new TCPPacket(localport, remotePort, seqNum, ackNum, ackFlag, synFlag, finFlag, windowSize, data);
     TCPWrapper.send(packetToSend, remoteAddress);
+
+    /*Only Want to Make a Resend Timer for Fins and Sins, 
+    Resending Acks is handled in Receive Pack */
     if(finFlag || synFlag)
     {
        createTimerTask(20000, packetToSend);
@@ -427,9 +444,8 @@ class StudentSocketImpl extends BaseSocketImpl {
       StudentSocketImpl socket;
       StudentSocketImpl.TCPState end_state;
 
-      ClosingThread(StudentSocketImpl my_socket, StudentSocketImpl.TCPState state){
+      ClosingThread(StudentSocketImpl my_socket){
         socket = my_socket;
-        end_state = state;
       }
 
       public void run(){
