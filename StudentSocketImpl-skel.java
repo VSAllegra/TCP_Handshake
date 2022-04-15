@@ -210,7 +210,7 @@ class StudentSocketImpl extends BaseSocketImpl {
 
         //Cancel Necessary Cause of Edge Case 
         if(tcpTimer != null) {cancel_reset_timer();}
-        createTimerTask(30000, null);
+        createTimerTask(40000, null);
       }
       break;
 
@@ -225,7 +225,7 @@ class StudentSocketImpl extends BaseSocketImpl {
         change_state(TCPState.TIME_WAIT);
 
         System.out.println("WAITING");
-        createTimerTask(30000, null);
+        createTimerTask(40000, null);
       }
 
       //EVENT Client Side: Receive Duplicate FIN (ACK (CW) is lost, and close() happens)
@@ -399,15 +399,15 @@ class StudentSocketImpl extends BaseSocketImpl {
     resend_counter++;
 
     /**Edge Case for when server side closes before client hits time_wait
-     * Assume that if no response is received after 3 attempts 
+     * Assume that if no response is received after 6 attempts 
      * the other side has already closed
      * */
-    if(curState == TCPState.LAST_ACK && resend_counter > 2){ //Set Arbitrarily to 3 ACKS
+    if(curState == TCPState.LAST_ACK && resend_counter > 5){ //Set Arbitrarily to 3 ACKS
       change_state(TCPState.TIME_WAIT);
     }
 
     // this must run only once the last time(r (30 second timer) has expired
-    if(curState == TCPState.TIME_WAIT || ((curState == TCPState.FIN_WAIT_2 || curState == TCPState.CLOSING) && resend_counter > 2)){
+    if(curState == TCPState.TIME_WAIT || ((curState == TCPState.FIN_WAIT_2 || curState == TCPState.CLOSING) && resend_counter > 6)){
       change_state(TCPState.CLOSED);
       try{
         D.unregisterConnection(address, localport, port, this);
