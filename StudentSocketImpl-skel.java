@@ -415,7 +415,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       notifyAll();
     }
     else{
-     //System.out.println(ref.toString());
+     System.out.println(ref.toString());
      resendPacket((TCPPacket)ref);
     }
 
