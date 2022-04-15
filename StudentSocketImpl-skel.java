@@ -179,6 +179,9 @@ class StudentSocketImpl extends BaseSocketImpl {
         if(tcpTimer != null) {cancel_reset_timer();}
         // cancel_reset_timer();
         change_state(TCPState.FIN_WAIT_2);
+
+        //For Same Edge Case but on Server Side
+        createTimerTask(30000, null);
         
       }
       break;
@@ -389,7 +392,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     }
 
     // this must run only once the last timer (30 second timer) has expired
-    if(curState == TCPState.TIME_WAIT){
+    if(curState == TCPState.TIME_WAIT || (curState == TCPState.FIN_WAIT_2 && resend_counter > 2)){
       change_state(TCPState.CLOSED);
 
       try{
@@ -442,7 +445,7 @@ class StudentSocketImpl extends BaseSocketImpl {
 
   class ClosingThread implements Runnable{
       StudentSocketImpl socket;
-      
+
       ClosingThread(StudentSocketImpl my_socket){
         socket = my_socket;
       }
