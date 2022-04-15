@@ -78,10 +78,6 @@ class StudentSocketImpl extends BaseSocketImpl {
    * @param p The packet that arrived
    */
   public synchronized void receivePacket(TCPPacket p){
-    // System.out.println("PACKET FLAGS:");
-    // System.out.println(p.ackFlag + " " + p.synFlag + " " + p.finFlag);
-    // System.out.println(p.toString());
-    System.out.println("ABOUT TO NOTIFY");
     this.notifyAll();
     if(p.synFlag || p.finFlag) 
     {
@@ -334,7 +330,6 @@ class StudentSocketImpl extends BaseSocketImpl {
    * @exception  IOException  if an I/O error occurs when closing this socket.
    */
   public synchronized void close() throws IOException {
-    System.out.println("CLOSING WAS CALLED! State is: " +  curState);
     switch(curState){
       //EVENT Server Side: close()
       case ESTABLISHED:
@@ -410,7 +405,6 @@ class StudentSocketImpl extends BaseSocketImpl {
       notifyAll();
     }
     else{
-     System.out.println(ref.toString());
      resendPacket((TCPPacket)ref);
     }
 
@@ -432,7 +426,6 @@ class StudentSocketImpl extends BaseSocketImpl {
 
   public void resendPacket(TCPPacket p)
   {
-    System.out.println("PACKET IS BEING RESENT");
     TCPWrapper.send(p, address);
     createTimerTask(5000, p);
   }
