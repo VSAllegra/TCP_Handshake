@@ -223,7 +223,7 @@ class StudentSocketImpl extends BaseSocketImpl {
         change_state(TCPState.TIME_WAIT);
 
         System.out.println("WAITING");
-        createTimerTask(15000, null);
+        createTimerTask(30000, null);
       }
 
       //EVENT Client Side: Receive Duplicate FIN (ACK (CW) is lost, and close() happens)
