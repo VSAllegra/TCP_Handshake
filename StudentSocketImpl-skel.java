@@ -442,8 +442,7 @@ class StudentSocketImpl extends BaseSocketImpl {
 
   class ClosingThread implements Runnable{
       StudentSocketImpl socket;
-      StudentSocketImpl.TCPState end_state;
-
+      
       ClosingThread(StudentSocketImpl my_socket){
         socket = my_socket;
       }
