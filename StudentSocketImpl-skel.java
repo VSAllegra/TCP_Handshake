@@ -166,8 +166,6 @@ class StudentSocketImpl extends BaseSocketImpl {
       //EVENT Sever Side: Receive FIN 
       if(p.finFlag)
       {
-        if(tcpTimer != null) {cancel_reset_timer();}
-
         //RESPONSE Server Side: Send ACK, switch State to CLOSING
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
         change_state(TCPState.CLOSING);
