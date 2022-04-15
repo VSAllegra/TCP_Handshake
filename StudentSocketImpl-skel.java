@@ -57,7 +57,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     //RESPONSE Client Side: Send Initial Syn Message & Switch to SYN_SENT STATE
     sendAndWrapPacket(remoteAddress, remotePort, false, true, false, windowSize, data);
     change_state(TCPState.SYN_SENT);
-    while(curState != TCPState.CLOSE_WAIT && curState != TCPState.ESTABLISHED)
+    while(curState != TCPState.CLOSE_WAIT)
       {
       try
       {
@@ -121,7 +121,6 @@ class StudentSocketImpl extends BaseSocketImpl {
       //RESPONSE Client Side: Send ACK, Change State to ESTABLISHED
       if(tcpTimer != null) {cancel_reset_timer();}
       // cancel_reset_timer();
-
       sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
       change_state(TCPState.ESTABLISHED);
       }
@@ -181,15 +180,15 @@ class StudentSocketImpl extends BaseSocketImpl {
         if(p.synFlag)
         {
           sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
+
+          sendAndWrapPacket(p.sourceAddr, p.sourcePort, false, false, true, windowSize, data);
         }
-        else
-        {
+
         // cancel_reset_timer();
         change_state(TCPState.FIN_WAIT_2);
 
         //For Same Edge Case but on Server Side
         createTimerTask(30000, null);
-        }
         
       }
       break;
