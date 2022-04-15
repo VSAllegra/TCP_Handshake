@@ -169,6 +169,9 @@ class StudentSocketImpl extends BaseSocketImpl {
         //RESPONSE Server Side: Send ACK, switch State to CLOSING
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
         change_state(TCPState.CLOSING);
+
+        //For Same Edge Case but on Server Side
+        createTimerTask(30000, null);
       }
 
       //EVENT B Server Side: Reveive ACK
@@ -401,8 +404,8 @@ class StudentSocketImpl extends BaseSocketImpl {
       change_state(TCPState.TIME_WAIT);
     }
 
-    // this must run only once the last timer (30 second timer) has expired
-    if(curState == TCPState.TIME_WAIT || (curState == TCPState.FIN_WAIT_2 && resend_counter > 2)){
+    // this must run only once the last time(r (30 second timer) has expired
+    if(curState == TCPState.TIME_WAIT || ((curState == TCPState.FIN_WAIT_2 || curState == TCPState.CLOSING) && resend_counter > 2)){
       change_state(TCPState.CLOSED);
       try{
         D.unregisterConnection(address, localport, port, this);
