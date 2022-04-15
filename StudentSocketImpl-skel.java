@@ -195,6 +195,9 @@ class StudentSocketImpl extends BaseSocketImpl {
         sendAndWrapPacket(p.sourceAddr, p.sourcePort, true, false, false, windowSize, data);
 
         System.out.println("WAITING");
+
+        //Cancel Necessary Cause of Edge Case 
+        if(tcpTimer != null) {cancel_reset_timer();}
         createTimerTask(30000, null);
       }
       break;
