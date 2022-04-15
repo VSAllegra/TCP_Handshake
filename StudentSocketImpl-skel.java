@@ -199,9 +199,6 @@ class StudentSocketImpl extends BaseSocketImpl {
 
         System.out.println("WAITING");
 
-        //Cancel Necessary Cause of Edge Case 
-        if(tcpTimer != null) {cancel_reset_timer();}
-        createTimerTask(40000, null);
       }
       break;
 
@@ -235,6 +232,10 @@ class StudentSocketImpl extends BaseSocketImpl {
         if(tcpTimer != null) {cancel_reset_timer();}
         // cancel_reset_timer();
         change_state(TCPState.TIME_WAIT);
+
+        if(tcpTimer != null) {cancel_reset_timer();}
+        System.out.println("WAITING");
+        createTimerTask(40000, null);
         
       }
 
